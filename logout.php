@@ -1,6 +1,6 @@
 <?php
-$_SESSION["logged in"] = false;
-session_unset("logged in");
+$_SESSION['Logged in'] = false;
+session_unset('Logged in');
 session_start();
 session_destroy();
 ?>

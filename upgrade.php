@@ -55,10 +55,19 @@ function custom_version_compare($NewVersion, $OldVersion)
     return 0;
 }
 
+function copySettings($src)
+{
+    require_once $src.'/settings.php';
+    require_once 'settings.php';
+    $settingsStr = '<?php $_SETTINGS = '.var_export($_SETTINGS, true).'; ?>';
+    unlink('settings.php');
+    file_put_contents('settings.php', $settingsStr);
+}
+
 if(!isset($_SESSION))
     session_start();
     
-if(!isset($_SESSION["logged in"]))
+if(!isset($_SESSION['Logged in']))
     header("Location: index.php");
 
 ob_start();
@@ -91,7 +100,6 @@ try
     {
         deleteDir("update");
         unlink("update.zip");
-        header("Location: index.php");
         ob_end_clean();
         include "header.php";
         echo "<script>
@@ -106,10 +114,10 @@ try
     array_shift($files);
     echo "New Version\n<br>\n";
     custom_copy("update/".$folder, ".");
+    copySettings();
     deleteDir("update");
     unlink("update.zip");
     echo "Updated to New Version";
-    //header("Location: index.php");
 }
 catch (Exception $e)
 {

@@ -1,10 +1,10 @@
 <?php
 
-//header('Content-Type: application/json');
+header('Content-Type: application/json');
 
 if (!isset($_SESSION))
     session_start();
-$elevated = (isset($_SESSION["logged in"]));
+$elevated = (isset($_SESSION['Logged in']));
 
 require_once "bookFuncs.php";
 

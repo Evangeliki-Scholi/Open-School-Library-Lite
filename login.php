@@ -2,21 +2,36 @@
 if (!isset($_SESSION))
     session_start();
 
-if (isset($_POST["username"]) && isset($_POST["password"]))
+if (isset($_POST['username']) && isset($_POST['password']))
 {
-    require_once "sql_connection.php";
+    require_once 'sql_connection.php';
 
-    $sql = $conn->prepare("SELECT `password`, `Name` FROM `admins` WHERE `username`=?");
-    $sql->bind_param("s", $_POST["username"]);
+    $sql = $conn->prepare('SELECT `id`, `password`, `Name` FROM `admins` WHERE `username`=?');
+    $sql->bind_param('s', $_POST['username']);
     if ($sql->execute())
     {
         $result = $sql->get_result();
         $row = ($result->fetch_assoc());
-        if (password_verify($_POST['password'], $row["password"]))
+        if (!isset($_POST['hashed']) && password_verify($_POST['password'], $row['password']))
         {
-            $_SESSION["logged in"] = true;
-            $_SESSION["name"] = $row["Name"];
-            echo "Welcome ".$_SESSION["name"];
+            echo "Needs update";
+            $newPassword = password_hash(md5($_POST['password']), PASSWORD_BCRYPT);
+            $sql = $conn->prepare('UPDATE `admins` SET `password` = ? WHERE `admins`.`id` = ?');
+            $sql->bind_param('sd', $newPassword, $row['id']);
+            if ($sql->execute())
+            {
+                $_SESSION['Logged in'] = true;
+                $_SESSION['Name'] = $row['Name'];
+                $_SESSION['Admin ID'] = $row['id'];
+                $_SESSION['Username'] = $_POST['username'];
+            }
+        }
+        else if (password_verify($_POST['password'], $row['password']) || password_verify(md5($_POST['password']), $row['password']))
+        {
+            $_SESSION['Logged in'] = true;
+            $_SESSION['Name'] = $row['Name'];
+            $_SESSION['Admin ID'] = $row['id'];
+            $_SESSION['Username'] = $_POST['username'];
         }
     }
 }

@@ -114,7 +114,7 @@ try
     array_shift($files);
     echo "New Version\n<br>\n";
     custom_copy("update/".$folder, ".");
-    copySettings();
+    copySettings("update/".$folder);
     deleteDir("update");
     unlink("update.zip");
     echo "Updated to New Version";

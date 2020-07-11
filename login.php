@@ -26,7 +26,7 @@ if (isset($_POST['username']) && isset($_POST['password']))
                 $_SESSION['Username'] = $_POST['username'];
             }
         }
-        else if (password_verify($_POST['password'], $row['password']) || password_verify(md5($_POST['password']), $row['password']))
+        else if (password_verify($_POST['password'], $row['password']) || password_verify(hash('sha256', $_POST['password']), $row['password']))
         {
             $_SESSION['Logged in'] = true;
             $_SESSION['Name'] = $row['Name'];

@@ -80,12 +80,15 @@ require_once 'header.php';
         var username = document.getElementById('Username').value;
         var newPassword = document.getElementById('New Password').value;
         
-        $.post('account.php', { Name : name, Username : username, 'New Password' : newPassword}, function(data)
+        sha256(newPassword).then(function(sha256Password)
         {
-            console.log(data);
-            data = JSON.parse(data);
-            if (data['response'] != true)
-                showError('There was a problem with changing your Informations');
+            $.post('account.php', { Name : name, Username : username, 'New Password' : sha256Password}, function(data)
+            {
+                console.log(data);
+                data = JSON.parse(data);
+                if (data['response'] != true)
+                    showError('There was a problem with changing your Informations');
+            });
         });
     }
 </script>

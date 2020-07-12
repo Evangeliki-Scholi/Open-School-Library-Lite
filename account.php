@@ -7,20 +7,20 @@ if (!$elevated || !isset($_SESSION['Admin ID']))
     die();
 }
 
-if(isset($_POST['Name']) && isset($_POST['Username']) && isset($_POST['New_Password']))
+if(isset($_POST['Name']) && isset($_POST['Username']) && isset($_POST['New_Password']) && isset($_POST['Algo']))
 {
     require_once 'sql_connection.php';
     $id = $_SESSION['Admin ID'];
     $sql;
     if ($_POST['New_Password'] !== '')
     {
-        $password = password_hash($_POST['New_Password'], PASSWORD_BCRYPT);
-        $sql = $conn->prepare('UPDATE `admins` SET `Name` = ?, `Username` = ?, `Password` = ? WHERE `admins`.`id` = ?');
-        $sql->bind_param('sssd', $_POST['Name'], $_POST['Username'], $password, $id);
+        $lpassword = password_hash($_POST['New_Password'], PASSWORD_BCRYPT);
+        $sql = $conn->prepare('UPDATE `admins` SET `Name` = ?, `Username` = ?, `Password` = ?, `Algo` = ? WHERE `admins`.`ID` = ?');
+        $sql->bind_param('ssssd', $_POST['Name'], $_POST['Username'], $lpassword, $_POST['Algo'], $id);
     }
     else
     {
-        $sql = $conn->prepare('UPDATE `admins` SET `Name` = ?, `Username` = ? WHERE `admins`.`id` = ?');
+        $sql = $conn->prepare('UPDATE `admins` SET `Name` = ?, `Username` = ? WHERE `admins`.`ID` = ?');
         $sql->bind_param('ssd', $_POST['Name'], $_POST['Username'], $id);
     }
     $executed = $sql->execute();
@@ -29,7 +29,7 @@ if(isset($_POST['Name']) && isset($_POST['Username']) && isset($_POST['New_Passw
         $_SESSION['Name'] = $_POST['Name'];
         $_SESSION['Username'] = $_POST['Username'];
     }
-    echo '{"response":'.$executed.'}';
+    echo ('{"response":'.(($executed == true) ? 'true' : 'false').'}');
     die();
 }
 
@@ -69,7 +69,7 @@ require_once 'header.php';
         window.location = 'logout.php';
     }
 
-    function saveInfos()
+    async function saveInfos()
     {
         if (document.getElementById('Name').value == '' || document.getElementById('Username').value == '')
         {
@@ -78,17 +78,14 @@ require_once 'header.php';
         }
         var name = document.getElementById('Name').value;
         var username = document.getElementById('Username').value;
-        var newPassword = document.getElementById('New Password').value;
+        var newPassword = (document.getElementById('New Password').value !== '') ? await Hash.SHA512(document.getElementById('New Password').value) : '';
         
-        sha256(newPassword).then(function(sha256Password)
+        $.post('account.php', {Name : name, Username : username, New_Password : newPassword, Algo : 'sha512' }, function(data)
         {
-            $.post('account.php', { Name : name, Username : username, 'New Password' : sha256Password}, function(data)
-            {
-                console.log(data);
-                data = JSON.parse(data);
-                if (data['response'] != true)
-                    showError('There was a problem with changing your Informations');
-            });
+            console.log(data);
+            data = JSON.parse(data);
+            if (data['response'] != true)
+                showError('There was a problem with changing your Informations');
         });
     }
 </script>

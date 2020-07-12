@@ -1,9 +1,18 @@
         </div>
+        <footer class="page-footer font-small blue" style="position: fixed; bottom: 0px; background-color:#343a40; width:100%">
+            <div class="footer-copyright text-center py-3" id="poweredBy" style="text-align:center;color:#ffffff;font-weight:bolder"></div>
+        </footer>
         <script>
+            $(function()
+            {
+                document.getElementById('poweredBy').innerHTML = 'Powered By <a href="https://github.com/Evangeliki-Scholi/Open-School-Library-Lite">Open School Library Lite</a>';
+            });
+
             function checkUpdate()
             {
                 window.location.href = 'upgrade.php';
             }
+
             function onSearch()
             {
                 var url = "book.php?type=searchBook&tag=" + $("#tagBook").val();

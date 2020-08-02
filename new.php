@@ -1,7 +1,7 @@
 <?php
 session_start();
-include_once "header.php";
-if (!$elevated) header("Location: index.php");
+include_once 'header.php';
+if (!$elevated) header('Location: index.php');
 ?>
 
             <form onsubmit="addBook(); return false;">

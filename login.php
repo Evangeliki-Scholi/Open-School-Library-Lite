@@ -102,8 +102,8 @@ if (isset($_POST['type']))
     }
 }*/
 
-include_once "header.php";
-if ($elevated) header("Location: index.php");
+include_once 'header.php';
+if ($elevated) header('Location: index.php');
 ?>
             <form autocomplete="off" method="POST" onsubmit="login(); return false;">
                 <div class="form-group">
@@ -168,5 +168,5 @@ if ($elevated) header("Location: index.php");
                 });
             </script>
 <?php
-include_once "footer.php";
+include_once 'footer.php';
 ?>

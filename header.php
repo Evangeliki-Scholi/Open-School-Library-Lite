@@ -1,12 +1,20 @@
 <?php
 $elevated = (isset($_SESSION['Logged in'])) ? $_SESSION['Logged in'] === true : false;
-require_once 'settings.php';
+
+function GetSetting ($name)
+{
+    require 'settings.php';
+    return ((isset($_SETTINGS[$name])) ? $_SETTINGS[$name] : $name);
+};
+
 ?>
 
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="contributors" content="Rikarnto Bariampa">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
         <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
@@ -26,22 +34,33 @@ require_once 'settings.php';
                     <li class="nav-item active">
                         <a class="nav-link" href="index.php"><?php echo (isset($_SETTINGS['Home']) ? $_SETTINGS['Home'] : 'Home'); ?><span class="sr-only">(current)</span></a>
                     </li>
-                <?php
+                    <?php
                     if ($elevated)
                     {
-                        echo '<li class="nav-item active"><a class="nav-link" href="borrow.php">'.(isset($_SETTINGS['Borrow']) ? $_SETTINGS['Borrow'] : 'Borrow').'</a></li>';
-                        echo '<li class="nav-item active"><a class="nav-link" href="return.php">'.(isset($_SETTINGS['Return']) ? $_SETTINGS['Return'] : 'Return').'</a></li>';
-                        echo '<li class="nav-item active"><a class="nav-link" href="edit.php">'.(isset($_SETTINGS['Edit Book']) ? $_SETTINGS['Edit Book'] : 'Edit Book').'</a></li>';
-                        echo '<li class="nav-item active"><a class="nav-link" href="new.php">'.(isset($_SETTINGS['New Book']) ? $_SETTINGS['New Book'] : 'New Book').'</a></li>';
-                        echo '<li class="nav-item active"><a class="nav-link" href="addUser.php">'.(isset($_SETTINGS['New User']) ? $_SETTINGS['New User'] : 'New User').'</a></li>';
-                        echo '<li class="nav-item active"><button type="button" class="btn btn-link" style="color:#FFFFFF;text-decoration: none !important" onclick="checkUpdate();">'.(isset($_SETTINGS['Check Update']) ? $_SETTINGS['Check Update'] : 'Check Update').'</button></li>';
+                        echo '<li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Books</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">';
+                        echo '<a class="dropdown-item" href="borrow.php">'.GetSetting('Borrow').'</a>';
+                        echo '<a class="dropdown-item" href="return.php">'.GetSetting('Return').'</a>';
+                        echo '<a class="dropdown-item" href="edit.php">'.GetSetting('Edit Book').'</a>';
+                        echo '<a class="dropdown-item" href="new.php">'.GetSetting('New Book').'</a>';
+                        echo '</div></li>';
+
+                        echo '<li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Users</a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">';
+                        echo '<a class="dropdown-item" href="addUser.php">'.GetSetting('New User').'</a>';
+                        echo '</div></li>';
+
+                        echo '<li class="nav-item active"><a class="nav-link" href="settingsFuncs.php">'.GetSetting('Settings').'</a></li>';
+                        echo '<li class="nav-item active"><button type="button" class="btn btn-link" style="color:#FFFFFF;text-decoration: none !important" onclick="checkUpdate();">'.GetSetting('Check Update').'</button></li>';
                     }
-                ?>
+                    ?>
                 </ul>
                 <form class="form-inline my-2 my-lg-0" onsubmit="return onSearch();">
                     <?php
-                    echo '<input class="form-control mr-sm-2" type="search" placeholder="'.(isset($_SETTINGS['Search']) ? $_SETTINGS['Search'] : 'Seach').'" aria-label="Search" id="tagBook" autofocus>';
-                    echo '<button class="btn btn-outline-success my-2 my-sm-0" type="Submit">'.(isset($_SETTINGS['Search']) ? $_SETTINGS['Search'] : 'Seach').'</button>';
+                    echo '<input class="form-control mr-sm-2" type="search" placeholder="'.GetSetting('Search').'" aria-label="Search" id="tagBook" autofocus>';
+                    echo '<button class="btn btn-outline-success my-2 my-sm-0" type="Submit">'.GetSetting('Search').'</button>';
                     ?>
                 </form>
                 &nbsp;&nbsp;

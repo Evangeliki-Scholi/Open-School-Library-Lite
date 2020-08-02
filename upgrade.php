@@ -69,7 +69,10 @@ function upgradeDatabase($src)
     if (file_exists($src.'/databaseUpdate.php'))
     {
         include $src.'/databaseUpdate.php';
-        return dbUpdate();
+        if (function_exists('dbUpdate'))
+            return dbUpdate();
+        else
+            return true;
     }
     else return true;
 }

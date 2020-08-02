@@ -13,8 +13,8 @@ session_destroy();
             {
                 document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
             }
-            deleteCookie("PHPSESSID");
-            window.location.href = "index.php";
+            deleteCookie('PHPSESSID');
+            window.location.href = 'index.php';
         </script>
     </body>
 </html>

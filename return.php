@@ -1,7 +1,7 @@
 <?php
 session_start();
-include_once "header.php";
-if (!$elevated) header("Location: index.php");
+include_once 'header.php';
+if (!$elevated) header('Location: index.php');
 ?>
 
             <form onsubmit="return findBook();">
@@ -98,5 +98,5 @@ if (!$elevated) header("Location: index.php");
                 }
             </script>
 <?php
-include_once "footer.php";
+include_once 'footer.php';
 ?>

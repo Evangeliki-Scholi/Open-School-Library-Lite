@@ -9,4 +9,5 @@
   'New User' => 'New User',
   'Check Update' => 'Check for Update',
   'Search' => 'Search',
+  'Settings' => 'Settings'
 ); ?>

@@ -13,7 +13,7 @@ function changeSetting($functionName, $value)
         unlink('settings.php');
         $SETTINGS[$functionName] = $value;
 
-        $settingsStr = '<?php $_SETTINGS = '.var_export($SETTINGS, true).'; ?>';
+        $settingsStr = '<?php\n$_SETTINGS = '.var_export($SETTINGS, true).';\n?>';
         unlink('settings.php');
         file_put_contents('settings.php', $settingsStr);
         return '{ "response": true }';
@@ -93,12 +93,17 @@ else
 ?>
 
 <form onsubmit="return editFuncs();" id='form'>
-    <button type="submit">Submit Changes</button>
+    <div id="innerform">
+    
+    </div>
+    <button type="submit" class="btn btn-primary">Submit Changes</button>
+    <button type="button" class="btn btn-info" onclick="addField();">Add Settings Field</button>
 </form>
 
 <script>
 
     var keys = [];
+    var needsRefresh = false;
 
     $(function()
     {
@@ -113,9 +118,19 @@ else
             for (var i = 0; i < keys.length; i++)
                 innerHTMLofForm += '<div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">' + keys[i] + '</span></div><input type="text" class="form-control" id="' + keys[i] + '" aria-describedby="basic-addon1" value="' + data[keys[i]] + '"></div>';
             
-            $('#form').html(innerHTMLofForm + $('#form').html());
+            $('#innerform').html(innerHTMLofForm);
         });
     });
+
+    function addField()
+    {
+        var newField = prompt("Enter new Field name", "");
+        if (newField == "") return;
+        keys.push(newField);
+        var innerHTMLofForm = '<div class="input-group mb-3"><div class="input-group-prepend"><span class="input-group-text" id="basic-addon1">' + newField + '</span></div><input type="text" class="form-control" id="' + newField + '" aria-describedby="basic-addon1" value="' + newField + '"></div>';
+        $('#innerform').html($('#innerform').html() + innerHTMLofForm);
+        needsRefresh = true;
+    }
 
     function editFuncs()
     {
@@ -137,6 +152,8 @@ else
                     showError('Field ' + keys[i] + ' and above where not updated');
                     throw keys[i];
                 }
+
+                if (needsRefresh) location.reload();
             });
         }
         catch (err) { console.log(err); }

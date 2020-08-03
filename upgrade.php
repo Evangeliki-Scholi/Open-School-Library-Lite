@@ -59,7 +59,7 @@ function copySettings($src)
 {
     require_once $src.'/settings.php';
     require_once 'settings.php';
-    $settingsStr = '<?php\n$_SETTINGS = '.var_export($_SETTINGS, true).';\n?>';
+    $settingsStr = '<?php $_SETTINGS = '.var_export($_SETTINGS, true).'; ?>';
     unlink('settings.php');
     file_put_contents('settings.php', $settingsStr);
 }
@@ -106,7 +106,6 @@ try
     $NewVersion = file_get_contents('update/'.$folder.'/Version.txt');
     $OldVersion = file_get_contents('Version.txt');
     
-    echo $NewVersion.'\n<br>\n'.$OldVersion.'\n<br>\n';
     $VersionComparison = custom_version_compare($NewVersion, $OldVersion);
     
     if ($VersionComparison <= 0)

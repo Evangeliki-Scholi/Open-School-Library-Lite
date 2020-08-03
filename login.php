@@ -131,12 +131,12 @@ if ($elevated) header('Location: index.php');
                             if (data['response'] == 'sha256')
                             {
                                 console.log('sha256');
-                                lpassword = await Hash.SHA256(lpassword);
+                                lpassword = sha256(lpassword);
                             }
                             else if (data['response'] == 'sha512')
                             {
                                 console.log('sha512');
-                                lpassword = await Hash.SHA512(lpassword);
+                                lpassword = sha512(lpassword);
                             }
 
                             console.log(lpassword);

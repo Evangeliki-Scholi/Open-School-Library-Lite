@@ -13,7 +13,7 @@ function changeSetting($functionName, $value)
         unlink('settings.php');
         $SETTINGS[$functionName] = $value;
 
-        $settingsStr = '<?php\n$_SETTINGS = '.var_export($SETTINGS, true).';\n?>';
+        $settingsStr = '<?php $_SETTINGS = '.var_export($SETTINGS, true).'; ?>';
         unlink('settings.php');
         file_put_contents('settings.php', $settingsStr);
         return '{ "response": true }';

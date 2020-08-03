@@ -21,6 +21,7 @@ function GetSetting ($name)
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
         <script src="js/alert.js"></script>
         <script src="js/hash.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navbar">

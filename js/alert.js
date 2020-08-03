@@ -4,7 +4,7 @@ function getNavBarHeight()
 }
 
 var isThereAnAlert = false;
-function showInfo(data)
+function ShowInfo(data)
 {
     if (!isThereAnAlert)
         document.getElementById("content").innerHTML+="<div class=\"alert alert-info\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Info: </strong>" + data + "</div>";
@@ -23,7 +23,7 @@ function showInfo(data)
     isThereAnAlert = true;
 }
 
-function showError(data)
+function ShowError(data)
 {
     if (!isThereAnAlert)
         document.getElementById("content").innerHTML+="<div class=\"alert alert-danger\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Error: </strong>" + data + "</div>";
@@ -42,7 +42,7 @@ function showError(data)
     isThereAnAlert = true;
 }
 
-function showSuccess(data)
+function ShowSuccess(data)
 {
     if (!isThereAnAlert)
         document.getElementById("content").innerHTML+="<div class=\"alert alert-success\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Success: </strong>" + data + "</div>";

@@ -9,12 +9,12 @@ $elevated = (isset($_SESSION['Logged in']));
 require 'bookFuncs.php';
 
 
-if (!isset($_GET['type']))
+if (!isset($_POST['type']))
 {
     echo '{}';
     exit();
 }
-$type = $_GET['type'];
+$type = $_POST['type'];
 
 switch($type)
 {
@@ -29,14 +29,14 @@ switch($type)
         break;
 
     case 'borrowBook':
-        if (!isset($_GET['id']) || !isset($_GET['userID']))
+        if (!isset($_POST['bookID']) || !isset($_POST['userID']))
         {
             echo '{ "response": false }';
             exit();
         }
 
-        $id = $_GET['id'];
-        $userID = $_GET['userID'];
+        $id = $_POST['bookID'];
+        $userID = $_POST['userID'];
         
         borrowBook($id, $userID);
         
@@ -63,10 +63,10 @@ switch($type)
         break;
     
     case 'getBook':
-        if (!isset($_GET['format']) || !isset($_GET['id']))
+        if (!isset($_POST['format']) || !isset($_POST['id']))
             echo '';
-        else if ($_GET['format'] == 'json')
-            echo Book::GetBookJSON($_GET['id'], $elevated);
+        else if ($_POST['format'] == 'json')
+            echo Book::GetBookJSON($_POST['id'], $elevated);
         //else if ($_GET["format"] == "xml");
         //    echo Book::GetBookXML($_GET["id"], $elevated);
         break;

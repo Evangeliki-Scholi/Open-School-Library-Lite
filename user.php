@@ -8,12 +8,12 @@ $elevated = (isset($_SESSION['Logged in']));
 require 'userFuncs.php';
 
 
-if (!isset($_GET['type']))
+if (!isset($_POST['type']))
 {
     echo '{}';
     exit();
 }
-$type = $_GET['type'];
+$type = $_POST['type'];
 
 switch($type)
 {
@@ -73,10 +73,10 @@ switch($type)
         break;
 
     case 'getUser':
-        if (!isset($_GET['format']) || !isset($_GET['id']))
+        if (!isset($_POST['format']) || !isset($_POST['userID']))
             echo '';
-        else if ($_GET['format'] == 'json')
-            echo User::GetUserJSON(md5($_GET['id']), $elevated);
+        else if ($_POST['format'] == 'json')
+            echo User::GetUserJSON(md5($_POST['userID']), $elevated);
         //else if ($_GET["format"] == "xml");
         //    echo User::GetUserXML(md5($_GET["id"]), $elevated);
         break;

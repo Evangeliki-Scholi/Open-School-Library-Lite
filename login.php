@@ -2,6 +2,13 @@
 if (!isset($_SESSION))
     session_start();
 
+$elevated = (isset($_SESSION['Logged in'])) ? $_SESSION['Logged in'] === true : false;
+if ($elevated)
+{
+    echo '';
+    die();
+}
+
 function GetAlgo($lusername)
 {
     try
@@ -101,72 +108,4 @@ if (isset($_POST['type']))
         }
     }
 }*/
-
-include_once 'header.php';
-if ($elevated) header('Location: index.php');
-?>
-            <form autocomplete="off" method="POST" onsubmit="login(); return false;">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Username</label>
-                    <input type="text" class="form-control" id="Username" name="username" placeholder="Username" required>
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" id="Password" name="password" placeholder="Password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
-
-            <script>
-
-                async function login()
-                {
-                    $.post('login.php', { type : 'GetAlgo', username : $('#Username').val() }, async function (data)
-                    {
-                        if (data !== '{}')
-                        {
-                            console.log(data);
-                            data = JSON.parse(data);
-                            var lpassword = $('#Password').val();
-                            if (data['response'] == 'sha256')
-                            {
-                                console.log('sha256');
-                                lpassword = sha256(lpassword);
-                            }
-                            else if (data['response'] == 'sha512')
-                            {
-                                console.log('sha512');
-                                lpassword = sha512(lpassword);
-                            }
-
-                            console.log(lpassword);
-                            
-                            $.post('login.php', { type : 'LogIn', username : $('#Username').val(), password : lpassword }, function(data)
-                            {
-                                console.log(data);
-                                if (data !== '{}')
-                                {
-                                    data = JSON.parse(data);
-                                    if (data['response'] === true)
-                                        window.location.href = 'index.php';
-                                    else
-                                        showInfo('Wrong credentials');
-                                }
-                                else
-                                    showError('Internal Server Error.<br>Contact Server Admins');
-                            });
-                        }
-                        else
-                            showError('Internal Server Error.<br>Contact Server Admins');
-                    }).fail(console.log);
-                    return false;
-                }
-
-                $(function()
-                {
-                    $("#Username").focus();
-                });
-            </script>
-<?php
-include_once 'footer.php';
 ?>

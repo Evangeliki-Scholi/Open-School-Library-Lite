@@ -28,7 +28,11 @@ function addUser($userID, $name)
 {
     require_once "sql_connection.php";
     $userID = md5($userID);
-    $sql = $conn->prepare("INSERT INTO `users` (`ID`, `Name`, `Identifier`) VALUES (NULL, ?, ?)");
+    if (!$sql = $conn->prepare("INSERT INTO `users` (`ID`, `Name`, `Identifier`) VALUES (NULL, ?, ?)"))
+    {
+        echo "{ \"response\": false }";
+        die();
+    }
     $sql->bind_param("ss", $name, $userID);
     echo (($sql->execute()) ? "{ \"response\": true }" : "{ \"response\": false }");
 }

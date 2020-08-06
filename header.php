@@ -3,8 +3,11 @@ $elevated = (isset($_SESSION['Logged in'])) ? $_SESSION['Logged in'] === true : 
 
 function GetSetting ($name)
 {
-    require 'settings.php';
-    return ((isset($_SETTINGS[$name])) ? $_SETTINGS[$name] : $name);
+    include_once 'settings.php';
+    if (isset($_SETTINGS) && isset($_SETTINGS[$name]))
+        return $_SETTINGS[$name];
+    else
+        return $name;
 };
 
 ?>

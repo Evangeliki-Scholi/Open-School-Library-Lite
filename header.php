@@ -67,8 +67,8 @@ function GetSetting ($name)
 </ul>
                 <form class="form-inline my-2 my-lg-0" onsubmit="return onSearch();">
                     <?php
-                    echo '<input class="form-control mr-sm-2" type="search" placeholder="'.GetSetting('Search').'" aria-label="Search" id="tagBook">';
-                    echo '<button class="btn btn-outline-success my-2 my-sm-0" type="Submit">'.GetSetting('Search').'</button>
+                    echo '<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" id="tagBook">';
+                    echo '<button class="btn btn-outline-success my-2 my-sm-0" type="Submit">Search</button>
 ';
                     ?>
                 </form>

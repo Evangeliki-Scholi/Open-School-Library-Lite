@@ -1,13 +1,13 @@
 <?php
 session_start();
 include_once 'header.php';
-require_once 'settings.php';
+include_once 'settings.php';
 ?>
 
             <div id="indexPage" style="visibility: visible;">
                 <br/>
                 <br/>
-                <h1 style="text-align: center;"><?php echo GetSetting('Welcome Message'); ?></h1>
+                <h1 style="text-align: center;">Hello and welcome</h1>
             </div>
 
 <?php

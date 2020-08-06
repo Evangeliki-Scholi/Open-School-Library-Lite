@@ -1,6 +1,6 @@
 $(function()
 {
-    document.getElementById('poweredBy').innerHTML = 'Powered By <a href="https://github.com/Evangeliki-Scholi/Open-School-Library-Lite">Open School Library Lite</a>';
+    $('#poweredBy').html('Powered By <a href="https://github.com/Evangeliki-Scholi/Open-School-Library-Lite">Open School Library Lite</a>');
 });
 
 function checkUpdate()

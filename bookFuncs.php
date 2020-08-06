@@ -158,7 +158,6 @@ function borrowBook($id, $userID)
     require_once 'sql_connection.php';
     $dateInTwoWeeks = strtotime('+2 weeks');
     $sql = 'UPDATE `books` SET `Availability` = 0, `BorrowedByID` = ?, `BorrowedUntil` = "'.date("Y-m-d", $dateInTwoWeeks).'" WHERE `books`.`Identifier` = ?;';
-    //echo $sql;
     $sql = $conn->prepare($sql);
     $sql->bind_param('ii', $userID, $id);
     echo (($sql->execute()) ? '{ "response": true }' : '{ "response": false }');

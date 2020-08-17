@@ -84,16 +84,13 @@ switch($type)
         break;
     
     case 'searchBook':
-        if (!isset($_GET['tag']))
+        if (!isset($_POST['tag']))
         {
             echo '{}';
             exit();
         }
 
-        /*$tag = $_GET["tag"];
-        searchBook($tag);*/
-
-        echo Book::searchBookJSON($_GET['tag'], 0, 10, $elevated);
+        echo Book::searchBookJSON($_POST['tag'], 0, 10, $elevated);
         break;
 
     default:

@@ -53,9 +53,9 @@ if (!$elevated) header('Location: index.php');
                 function findBook()
                 {
                     if ($("#bookBarcode").val() == "") return false;
-                    var url = "book.php?type=getBook&format=json&id=" + $("#bookBarcode").val();
+                    var url = "book.php";
                     console.log(url);
-                    $.getJSON(url)
+                    $.post(url, { type : "getBook", format : "json", id : $("#bookBarcode").val() })
                         .done(function(data)
                         {
                             $("#id").val(data["ID"]);
@@ -73,9 +73,8 @@ if (!$elevated) header('Location: index.php');
                 function deleteBook()
                 {
                     if (!canUpdate) return false;
-                    var url = "book.php?type=deleteBook&id=" + $("#id").val();
-                    console.log(url);
-                    $.getJSON(url)
+                    var url = "book.php?";
+                    $.post(url, { type : "deleteBook", id : $("#id").va() })
                         .done(function(data)
                         {
                             console.log(data);

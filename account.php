@@ -7,7 +7,7 @@ if(isset($_POST['Name']) && isset($_POST['Username']) && isset($_POST['New_Passw
     require_once 'sql_connection.php';
     $id = $_SESSION['Admin ID'];
     $sql;
-    if ($_POST['New_Password'] !== '')
+    if ($_POST['New_Password'] != '')
     {
         $lpassword = password_hash($_POST['New_Password'], PASSWORD_BCRYPT);
         $sql = $conn->prepare('UPDATE `admins` SET `Name` = ?, `Username` = ?, `Password` = ?, `Algo` = ? WHERE `admins`.`ID` = ?');

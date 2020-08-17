@@ -6,8 +6,10 @@ function HideEverything()
     $('#loginPage').css('height', '0');
     $('#accountPage').css('visibility', 'collapse');
     $('#accountPage').css('height', '0');
-    $('#borrowPage').css('visibility', 'collapse');
-    $('#borrowPage').css('height', '0');
+    $('#borrowBookPage').css('visibility', 'collapse');
+    $('#borrowBookPage').css('height', '0');
+    $('#addBookPage').css('visibility', 'collapse');
+    $('#addBookPage').css('height', '0');
 }
 
 function ShowIndex()
@@ -33,7 +35,13 @@ function ShowAccount()
 function ShowBorrow()
 {
     HideEverything();
-    $('#borrowPage').css('visibility', 'visible');
+    $('#borrowBookPage').css('visibility', 'visible');
+}
+
+function ShowAddBook()
+{
+    HideEverything();
+    $('#addBookPage').css('visibility', 'visible');
 }
 
 const loginAPIURL = 'login.php';
@@ -147,7 +155,7 @@ function SaveInfos()
     var newPassword = $('#AccountPassword').val();
     if (newPassword === undefined)
         newPassword = '';
-    if (newPassword != '' && newPassword != undefined)
+    if (newPassword != '')
         newPassword = sha512_256(newPassword);
 
     if (name == '' || username == '')
@@ -203,7 +211,6 @@ function FindBorrowBook()
     }
     $.post(bookAPIURL, { type : 'getBook', format : 'json', id : bookBarcode }, function(data)
     {
-        console.log(data);
         try
         {
             if (!data.hasOwnProperty('ID')  || !data.hasOwnProperty('Title') || !data.hasOwnProperty('Author')  || data.hasOwnProperty('error'))
@@ -323,4 +330,19 @@ function BorrowBook()
         ShowError('Webclient error 1');
         return;
     });
+}
+
+function addBook()
+{
+    var BOOKAPI_V1 = '/API/V1/Book.php';
+    $.post(BOOKAPI, { type : 'AddBook', Identifier : $('#id').val(), Title : $('#title').val(), Author : $('#author').val(), Dewey : $('#dewey').val(), ISBN : $('#ISBN').val() })
+        .done(function(data)
+        {
+            if (data["response"] == true && data['error'] == undefined)
+                ShowSuccess("Book added successfully");
+            else
+                ShowError(data['error']);
+            return false;
+        });
+    return false;
 }

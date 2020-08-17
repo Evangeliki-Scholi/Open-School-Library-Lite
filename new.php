@@ -36,22 +36,16 @@ if (!$elevated) header('Location: index.php');
 
             function addBook()
             {
-                var url = "book.php?type=addBook&id=" + $("#id").val() + "&title=" + $("#title").val() + "&author=" + $("#author").val() + "&dewey=" + $("#dewey").val() + "&ISBN=" + $("#ISBN").val();                
-                try
-                {
-                    $.getJSON(url)
-                        .done(function(data)
-                        {
-                            if (data["response"] === true)
-                                showSuccess("Book added successfully");
-                            else if (data["response"] === false)
-                                showInfo("Book might already exist in database");
-                            else
-                                showError("An unexpected error occured");
-                            return false;
-                        });
-                }
-                catch { }
+                var BOOKAPI = '/API/V1/Book.php';
+                $.post(BOOKAPI, { type : 'AddBook', Identifier : $('#id').val(), Title : $('#title').val(), Author : $('#author').val(), Dewey : $('#dewey').val(), ISBN : $('#ISBN').val() })
+                    .done(function(data)
+                    {
+                        if (data["response"] == true && data['error'] == undefined)
+                            ShowSuccess("Book added successfully");
+                        else
+                            ShowError(data['error']);
+                        return false;
+                    });
                 return false;
             }
             </script>

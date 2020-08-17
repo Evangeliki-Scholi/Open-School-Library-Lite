@@ -1,6 +1,8 @@
 $(function()
 {
     $('#poweredBy').html('Powered By <a href="https://github.com/Evangeliki-Scholi/Open-School-Library-Lite">Open School Library Lite</a>');
+    HideEverything();
+    ShowIndex();
 });
 
 function checkUpdate()
@@ -10,18 +12,22 @@ function checkUpdate()
 
 function onSearch()
 {
-    var url = "book.php?type=searchBook&tag=" + $("#tagBook").val();
+    var url = "book.php";
     var AvailCol = 0;
     var FoundAvailCol = false;
     try
     {
-        $.getJSON(url)
+        $.post(url, { type : "searchBook", tag : $("#tagBook").val() })
             .done(function(data)
             {
+                if (data.length == 0)
+                {
+                    document.getElementById("content").innerHTML = "";
+                    ShowInfo('No results were found');
+                }
+
                 length = data.length;
                 if (length == 0) return;
-
-                console.log(data);
 
                 var col = [];
                 for (var i = 0; i < data.length; i++)

@@ -48,6 +48,8 @@ const loginAPIURL = 'login.php';
 const bookAPIURL = 'book.php';
 const userAPIURL = 'user.php';
 
+const BOOKAPI_V1 = '/API/V1/Book.php';
+
 async function GetUserHashingAlgorithm(username)
 {
     return await Promise.resolve($.post(loginAPIURL, { type : 'GetAlgo', username : username }));
@@ -152,7 +154,7 @@ function SaveInfos()
 {
     var name = $('#AccountName').val();
     var username = $('#AccountUsername').val();
-    var newPassword = $('#AccountPassword').val();
+    var newPassword = $('#AccountNewPassword').val();
     if (newPassword === undefined)
         newPassword = '';
     if (newPassword != '')
@@ -209,11 +211,19 @@ function FindBorrowBook()
         ShowError('Book barcode can not be empty');
         return;
     }
-    $.post(bookAPIURL, { type : 'getBook', format : 'json', id : bookBarcode }, function(data)
+    $.post(BOOKAPI_V1, { type : 'GetBook', Identifier : bookBarcode }, function(data)
     {
+        console.log(data);
         try
         {
-            if (!data.hasOwnProperty('ID')  || !data.hasOwnProperty('Title') || !data.hasOwnProperty('Author')  || data.hasOwnProperty('error'))
+            data = JSON.parse(data);
+            if (data['response'] == true)
+            {
+                $('#BorrowBookID').val(data['Identifier']);
+                $('#BorrowBookTitle').val(data['Title']);
+                $('#BorrowBookAuthor').val(data['Author']);
+            }
+            else
             {
                 $('#BorrowBookID').val('');
                 $('#BorrowBookTitle').val('');
@@ -221,9 +231,6 @@ function FindBorrowBook()
                 ShowError('Internal server error');
                 return;
             }
-            $('#BorrowBookID').val(data['ID']);
-            $('#BorrowBookTitle').val(data['Title']);
-            $('#BorrowBookAuthor').val(data['Author']);
             return;
         }
         catch
@@ -332,10 +339,9 @@ function BorrowBook()
     });
 }
 
-function addBook()
+function AddBook()
 {
-    var BOOKAPI_V1 = '/API/V1/Book.php';
-    $.post(BOOKAPI, { type : 'AddBook', Identifier : $('#id').val(), Title : $('#title').val(), Author : $('#author').val(), Dewey : $('#dewey').val(), ISBN : $('#ISBN').val() })
+    $.post(BOOKAPI_V1, { type : 'AddBook', Identifier : $('#id').val(), Title : $('#title').val(), Author : $('#author').val(), Dewey : $('#dewey').val(), ISBN : $('#ISBN').val() })
         .done(function(data)
         {
             if (data["response"] == true && data['error'] == undefined)

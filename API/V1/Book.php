@@ -4,10 +4,19 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
-$elevated = (isset($_SESSION['Logged in'])) ? $_SESSION['Logged in'] === true : false;
+session_start();
+$elevated = (isset($_SESSION['Logged in']) && isset($_SESSION['Level'])) ? $_SESSION['Level'] : 3;
 
-function AddBook()
+$permissionLevels = array(
+    0 => array('AddBook', 'BorrowBook', 'CheckBookBorrowed', 'CheckBookExists', 'EditBook', 'GetBook', 'RemoveBook', 'ReturnBook'),
+    1 => array('AddBook', 'BorrowBook', 'CheckBookBorrowed', 'CheckBookExists', 'EditBook', 'GetBook', 'RemoveBook', 'ReturnBook')
+);
+
+function AddBook($permissionLevels, $elevated)
 {
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
     require_once '../../sql_connection.php';
 
     $Identifier = '';
@@ -20,12 +29,13 @@ function AddBook()
     if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '')
         return array('response' => false, 'error' => 'Identifier not provided');
     
-    $exists = CheckBookExists();
+    $exists = CheckBookExists($permissionLevels, $elevated);
     if ($exists['response'])
         return array('response' => false, 'error' => 'A book with that Identifier already exists');
     if (isset($exists['error']))
         return array('response' => false, 'error' => $exists['error']);
 
+    $Identifier = $_POST['Identifier'];
     if (isset($_POST['Title']))
         $Title = $_POST['Title'];
     if (isset($_POST['Author']))
@@ -39,7 +49,6 @@ function AddBook()
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -48,7 +57,7 @@ function AddBook()
     {
         $statement->close();
         $conn->close();
-        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+        return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
 
     $query = 'SELECT `Title`, `Author`, `Dewey`, `ISBN`FROM `books` WHERE `Identifier` = ? LIMIT 1;';
@@ -60,7 +69,7 @@ function AddBook()
     {
         $statement->close();
         $conn->close();
-        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+        return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
     $result = $statement->get_result();
     if ($result->num_rows == 0)
@@ -82,8 +91,99 @@ function AddBook()
     return array('response' => true);
 }
 
-function CheckBookExists()
+function BorrowBook($permissionLevels, $elevated)
 {
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
+    require_once '../../sql_connection.php';
+
+    if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '' || !isset($_POST['UserID']) || $_POST['UserID'] == '')
+        return array('response' => false, 'error' => 'Book Identifier or User ID not provided');
+    $Identifier = $_POST['Identifier'];
+    $UserID = $_POST['UserID'];
+
+    $exists = CheckBookExists($permissionLevels, $elevated);
+    if (!$exists['response'])
+        return array('response' => false, 'error' => 'A book with that Identifier does not exist');
+    if (isset($exists['error']))
+        return array('response' => false, 'error' => $exists['error']);
+
+    $borrowed = CheckBookBorrowed($permissionLevels, $elevated);
+    if ($borrowed['response'] && !isset($borrowed['error']))
+        return array('response' => false, 'error' => 'A book with that Identifier is already borrowed');
+    else if (isset($borrowed['error']))
+        return $borrowed;
+
+    $query = 'UPDATE `books` SET `Availability` = 0, `BorrowedByID` = ?, `BorrowedUntil` = ? WHERE `Identifier` = ?;';
+    $statement = $conn->prepare($query);
+    if (!$statement)
+    {
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
+    }
+
+    $dateInTwoWeeks = date("Y-m-d", strtotime('+2 weeks'));
+
+    $statement->bind_param('iss', $UserID, $dateInTwoWeeks,$Identifier);
+    if (!$statement->execute())
+    {
+        $statement->close();
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+    }
+    $statement->close();
+    $conn->close();
+    return array('response' => true);
+}
+
+function CheckBookBorrowed($permissionLevels, $elevated)
+{
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+        
+    require_once '../../sql_connection.php';
+
+    $exists = CheckBookExists($permissionLevels, $elevated);
+    if (!$exists['response'])
+        return array('response' => false, 'error' => 'A book with that Identifier does not exist');
+    if (isset($exists['error']))
+        return array('response' => false, 'error' => $exists['error']);
+
+    $conn = GetDBConnection();
+    if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '')
+        return array('response' => false, 'error' => 'Identifier not provided');
+    
+    $Identifier = $_POST['Identifier'];
+
+    $query = 'SELECT `Availability` FROM `books` WHERE `Identifier` = ?;';
+    $statement = $conn->prepare($query);
+    if (!$statement)
+    {
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
+    }
+
+    $statement->bind_param('s', $Identifier);
+    if (!$statement->execute())
+    {
+        $statement->close();
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+    }
+
+    $result = $statement->get_result();
+    $row = $result->fetch_assoc();
+    $statement->close();
+    $conn->close();
+    return array('response' => $row['Availability'] == 0);
+}
+
+function CheckBookExists($permissionLevels, $elevated)
+{
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
     require_once '../../sql_connection.php';
 
     $conn = GetDBConnection();
@@ -96,7 +196,6 @@ function CheckBookExists()
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -106,7 +205,7 @@ function CheckBookExists()
     {
         $statement->close();
         $conn->close();
-        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+        return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
 
     $result = $statement->get_result();
@@ -115,8 +214,11 @@ function CheckBookExists()
     return array('response' => $result->num_rows != 0);
 }
 
-function EditBook()
+function EditBook($permissionLevels, $elevated)
 {
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
     require_once '../../sql_connection.php';
 
     $Identifier = '';
@@ -130,7 +232,7 @@ function EditBook()
         return array('response' => false, 'error' => 'Identifier not provided');
     $Identifier = $_POST['Identifier'];
 
-    $exists = CheckBookExists();
+    $exists = CheckBookExists($permissionLevels, $elevated);
     if (!$exists['response'])
         return array('response' => false, 'error' => 'A book with that Identifier does not exist');
     if (isset($exists['error']))
@@ -144,12 +246,21 @@ function EditBook()
         $Dewey = $_POST['Dewey'];
     if (isset($_POST['ISBN']))
         $ISBN = $_POST['ISBN'];
+    if (isset($_POST['Metadata']))
+    {
+        json_decode($_POST['Metadata']);
+        if (json_last_error() != JSON_ERROR_NONE)
+        {
+            $conn->close();
+            return array('response' => false, 'error' => 'Metadata have to be in JSON formatting in Book API V1');
+        }
+        $Metadata = $_POST['Metadata'];
+    }
 
     $query = 'SELECT `Title`, `Author`, `Dewey`, `ISBN`, `Metadata` FROM `books` WHERE `Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -184,7 +295,6 @@ function EditBook()
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -232,25 +342,27 @@ function EditBook()
     return array('response' => true);
 }
 
-function GetBook()
+function GetBook($permissionLevels, $elevated)
 {
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
     require_once '../../sql_connection.php';
 
     if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '')
         return array('response' => false, 'error' => 'Identifier not provided');
     $Identifier = $_POST['Identifier'];
 
-    $exists = CheckBookExists();
+    $exists = CheckBookExists($permissionLevels, $elevated);
     if (!$exists['response'])
         return array('response' => false, 'error' => 'A book with that Identifier does not exist');
     if (isset($exists['error']))
         return array('response' => false, 'error' => $exists['error']);
 
-    $query = 'SELECT `Identifier`, `Title`, `Author`, `Dewey`, `ISBN`, `Availability`, `BorrowedUntil` FROM `books` WHERE `Identifier` = ?;';
+    $query = 'SELECT `Identifier`, `Title`, `Author`, `Dewey`, `ISBN`, `Availability`, `BorrowedUntil`, `BorrowedByID`, `Metadata` FROM `books` WHERE `Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -273,21 +385,23 @@ function GetBook()
     $row = $result->fetch_assoc();
     $row['response'] = true;
 
-    $result = $statement->get_result();
     $statement->close();
     $conn->close();
-    return json_encode($row);
+    return $row;
 }
 
-function RemoveBook()
+function RemoveBook($permissionLevels, $elevated)
 {
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
     require_once '../../sql_connection.php';
 
     if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '')
         return array('response' => false, 'error' => 'Identifier not provided');
     $Identifier = $_POST['Identifier'];
 
-    $exists = CheckBookExists();
+    $exists = CheckBookExists($permissionLevels, $elevated);
     if (!$exists['response'])
         return array('response' => false, 'error' => 'A book with that Identifier does not exist');
     if (isset($exists['error']))
@@ -297,7 +411,6 @@ function RemoveBook()
     $statement = $conn->prepare($query);
     if (!$statement)
     {
-        $statement->close();
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
     }
@@ -310,7 +423,7 @@ function RemoveBook()
         return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
     }
 
-    $exists = CheckBookExists();
+    $exists = CheckBookExists($permissionLevels, $elevated);
     if ($exists['response'])
         return array('response' => false, 'error' => 'The given book can not be removed from the database');
     if (isset($exists['error']))
@@ -321,6 +434,93 @@ function RemoveBook()
     return array('response' => true);
 }
 
+function ReturnBook($permissionLevels, $elevated)
+{
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+
+    require_once '../../sql_connection.php';
+
+    if (!isset($_POST['Identifier']) || $_POST['Identifier'] == '')
+        return array('response' => false, 'error' => 'Identifier not provided');
+    $Identifier = $_POST['Identifier'];
+
+    $exists = CheckBookExists($permissionLevels, $elevated);
+    if (!$exists['response'])
+        return array('response' => false, 'error' => 'A book with that Identifier does not exist');
+    if (isset($exists['error']))
+        return array('response' => false, 'error' => $exists['error']);
+
+    $borrowed = CheckBookBorrowed($permissionLevels, $elevated);
+    if (!$borrowed['response'] && !isset($borrowed['error']))
+        return array('response' => false, 'error' => 'A book with that Identifier is not borrowed');
+    else if (isset($borrowed['error']))
+        return $borrowed;
+
+    $query = 'UPDATE `books` SET `Availability` = 1, `BorrowedByID` = NULL, `BorrowedUntil` = NULL WHERE `Identifier` = ?;';
+    $statement = $conn->prepare($query);
+    if (!$statement)
+    {
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
+    }
+
+    $statement->bind_param('s', $Identifier);
+    if (!$statement->execute())
+    {
+        $statement->close();
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+    }
+    $statement->close();
+    $conn->close();
+    return array('response' => true);
+}
+
+function SearchBooks($permissionLevels, $elevated)
+{
+    require_once '../../sql_connection.php';
+
+    if (!isset($_POST['SearchTag']) || $_POST['SearchTag'] == '' || strlen($_POST['SearchTag']) < 2)
+        return array('response' => false, 'error' => 'Search tag not provided');
+    $SearchTag = '%'.$_POST['SearchTag'].'%';
+    $SearchIdentifier = $_POST['SearchTag'];
+    $Skip = (isset($_POST['Skip']) ? $_POST['Skip'] : 0);
+    $Limit = (isset($_POST['Limit']) ? (($_POST['Limit'] <= 50) ? $_POST['Limit'] : 20) : 20);
+
+    $query = '';
+    if (0 <= $elevated && $elevated <= 1)
+        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntil`, `users`.`Name` FROM `books` LEFT JOIN `users` ON `books`.`BorrowedByID` = `users`.`Identifier` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+    else
+        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntil` FROM `books` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+    
+    $statement = $conn->prepare($query);
+    if (!$statement)
+    {
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not prepare statement in Book API V1');
+    }
+
+    $statement->bind_param('sssss', $SearchTag, $SearchTag, $SearchTag, $SearchTag, $SearchIdentifier);
+    if (!$statement->execute())
+    {
+        $statement->close();
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not execute statement in Book API V1');
+    }
+
+    $result = $statement->get_result();
+    $results = array('response' => false, 'data' => array());
+
+    if ($result->num_rows == 0)
+        return $results;
+    $results['response'] = true;
+    while ($row = $result->fetch_assoc())
+        $results['data'][] = $row;
+
+    return $results;
+}
+
 header('Content-Type: application/json');
 
 if (!isset($_POST['type']))
@@ -329,5 +529,5 @@ if (!isset($_POST['type']))
 if (!function_exists($_POST['type']))
     die('{ "response" : false, "error" : "Book API function `'.$_POST['type'].'` does not exist" }');
 
-echo json_encode(($_POST['type']()));
+echo json_encode(($_POST['type']($permissionLevels, $elevated)), JSON_UNESCAPED_UNICODE);
 ?>

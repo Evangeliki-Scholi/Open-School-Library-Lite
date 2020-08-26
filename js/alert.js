@@ -3,60 +3,58 @@ function getNavBarHeight()
     return document.getElementById("navbar").clientHeight;
 }
 
-var isThereAnAlert = false;
+function CreateBannerID() {
+    var result = '';
+    var allCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = allCharacters.length;
+    for ( var i = 0; i < 12; i++ )
+       result += allCharacters.charAt(Math.floor(Math.random() * charactersLength));
+    return result;
+ }
+
+function DeleteBanner(bannerID)
+{
+    var banner = document.getElementById(bannerID);
+    if (banner === null) return;
+    banner.parentNode.removeChild(banner);
+}
+
+function CreateBanner(message, duration, type)
+{
+    var bannerID = CreateBannerID();
+    var banner = document.createElement('div');
+    banner.id = bannerID;
+    banner.classList.add('alert');
+    banner.classList.add('alert-' + type);
+    banner.style.position = 'absolute';
+    banner.style.right = '0px';
+    banner.style.top = document.getElementById('navbar').offsetHeight + "px";
+
+    banner.innerHTML = message + '&nbsp;&nbsp;<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg" onclick="DeleteBanner(\'' + bannerID + '\');"><path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.146-3.146a.5.5 0 0 0-.708-.708L8 7.293 4.854 4.146a.5.5 0 1 0-.708.708L7.293 8l-3.147 3.146a.5.5 0 0 0 .708.708L8 8.707l3.146 3.147a.5.5 0 0 0 .708-.708L8.707 8l3.147-3.146z"/></svg>';
+
+    document.getElementById('content').insertBefore(banner, document.getElementById('content').firstChild);
+
+    if (duration != -1)
+    {
+        setTimeout(function()
+        {
+            DeleteBanner(bannerID);
+        }, duration);
+    }
+    return bannerID;
+}
+
 function ShowInfo(data)
 {
-    if (!isThereAnAlert)
-        document.getElementById("content").innerHTML+="<div class=\"alert alert-info\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Info: </strong>" + data + "</div>";
-    else
-    {
-        if (document.getElementById("alert").classList.contains("alert-success"))
-            document.getElementById("alert").classList.remove("alert-success");
-        
-            if (document.getElementById("alert").classList.contains("alert-danger"))
-            document.getElementById("alert").classList.remove("alert-danger");
-
-        if (!document.getElementById("alert").classList.contains("alert-info"))
-            document.getElementById("alert").classList.add("alert-info");
-        document.getElementById("alert").innerHTML="<strong>Info: </strong>" + data;
-    }
-    isThereAnAlert = true;
+    CreateBanner('<string>Info: </strong>' + data, 5000, 'info');
 }
 
 function ShowError(data)
 {
-    if (!isThereAnAlert)
-        document.getElementById("content").innerHTML+="<div class=\"alert alert-danger\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Error: </strong>" + data + "</div>";
-    else
-    {
-        if (document.getElementById("alert").classList.contains("alert-success"))
-            document.getElementById("alert").classList.remove("alert-success");
-        
-            if (document.getElementById("alert").classList.contains("alert-info"))
-            document.getElementById("alert").classList.remove("alert-info");
-
-        if (!document.getElementById("alert").classList.contains("alert-danger"))
-            document.getElementById("alert").classList.add("alert-danger");
-        document.getElementById("alert").innerHTML="<strong>Error: </strong>" + data;
-    }
-    isThereAnAlert = true;
+    CreateBanner('<string>Error: </strong>' + data, 7000, 'danger');
 }
 
 function ShowSuccess(data)
 {
-    if (!isThereAnAlert)
-        document.getElementById("content").innerHTML+="<div class=\"alert alert-success\" id=\"alert\" style=\"position:absolute;right:0px;top:" + getNavBarHeight() + "px\"><strong>Success: </strong>" + data + "</div>";
-    else
-    {
-        if (document.getElementById("alert").classList.contains("alert-info"))
-            document.getElementById("alert").classList.remove("alert-info");
-        
-            if (document.getElementById("alert").classList.contains("alert-danger"))
-            document.getElementById("alert").classList.remove("alert-danger");
-
-        if (!document.getElementById("alert").classList.contains("alert-success"))
-            document.getElementById("alert").classList.add("alert-success");
-        document.getElementById("alert").innerHTML="<strong>Success: </strong>" + data;
-    }
-    isThereAnAlert = true;
+    CreateBanner('<string>Success: </strong>' + data, 5000, 'success');
 }

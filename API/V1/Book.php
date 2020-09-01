@@ -4,6 +4,8 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+chdir(dirname(__FILE__));
+
 session_start();
 $elevated = (isset($_SESSION['Logged in']) && isset($_SESSION['Level'])) ? $_SESSION['Level'] : 3;
 

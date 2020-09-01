@@ -1,25 +1,12 @@
+var itemsToHide = [ 'index', 'search', 'login', 'account', 'borrowBook', 'returnBook', 'editBook', 'addBook', 'addUser', 'editUser' ];
+
 function HideEverything()
 {
-    $('#indexPage').css('visibility', 'collapse');
-    $('#indexPage').css('height', '0');
-    $('#searchPage').css('visibility', 'collapse');
-    $('#searchPage').css('height', '0');
-    $('#loginPage').css('visibility', 'collapse');
-    $('#loginPage').css('height', '0');
-    $('#accountPage').css('visibility', 'collapse');
-    $('#accountPage').css('height', '0');
-    $('#borrowBookPage').css('visibility', 'collapse');
-    $('#borrowBookPage').css('height', '0');
-    $('#returnBookPage').css('visibility', 'collapse');
-    $('#returnBookPage').css('height', '0');
-    $('#editBookPage').css('visibility', 'collapse');
-    $('#editBookPage').css('height', '0');
-    $('#addBookPage').css('visibility', 'collapse');
-    $('#addBookPage').css('height', '0');
-    $('#addUserPage').css('visibility', 'collapse');
-    $('#addUserPage').css('height', '0');
-    $('#editUserPage').css('visibility', 'collapse');
-    $('#editUserPage').css('height', '0');
+    for (var i = 0; i < itemsToHide.length; i++)
+    {
+        $('#' + itemsToHide[i] + 'Page').css('visibility', 'collapse');
+        $('#' + itemsToHide[i] + 'Page').css('height', '0');
+    }
 }
 
 function ShowIndex()
@@ -129,6 +116,8 @@ function AddUser()
         message += ((message.length != 0) ? '<br />' : '') + 'User Username can not be empty';
     if ($('#AddUserPassword').val() == '')
         message += ((message.length != 0) ? '<br />' : '') + 'User Password can not be empty';
+    if ($('#AddUserGrade').val() == 'Please choose education "grade"')
+        message += ((message.length != 0) ? '<br />' : '') + 'User Grade can not be empty';
 
     if (message.length != 0)
     {
@@ -141,8 +130,9 @@ function AddUser()
     var Username = $('#AddUserUsername').val();
     var Email = $('#AddUserEmail').val();
     var Password = sha512_256($('#AddUserPassword').val());
+    var Grade = $('#AddUserGrade').val();
 
-    $.post(USERSAPI_V1, { type : 'AddUser', Identifier : Identifier, Name : Name, Username : Username, Email : Email, Password : Password, Algo : "sha256" })
+    $.post(USERSAPI_V1, { type : 'AddUser', Identifier : Identifier, Name : Name, Username : Username, Email : Email, Password : Password, Algo : "sha256", Grade : Grade })
         .done(function(data)
         {
             if (data.hasOwnProperty('error'))
@@ -277,6 +267,7 @@ function FindBorrowUser()
                 return;
             }
             $('#BorrowUserName').val(data['data']['Name']);
+            $('#BorrowUserGrade').val(data['data']['Grade']);
         }
         catch
         {
@@ -362,6 +353,7 @@ function FindEditUser()
                 $('#EditUserName').val(data['data']['Name']);
                 $('#EditUserUsername').val(data['data']['Username']);
                 $('#EditUserEmail').val(data['data']['Email']);
+                $('#EditUserGrade').val(data['data']['Grade']);
                 $('#EditUserMetadata').val(data['data']['Metadata']);
             }
         })
@@ -875,6 +867,8 @@ function SaveUserInfo()
         message += ((message.length != 0) ? '<br />' : '') + 'User Name can not be empty';
     if ($('#EditUserUsername').val() == '')
         message += ((message.length != 0) ? '<br />' : '') + 'User Username can not be empty';
+    if ($('#EditUserGrade').val() == 'Please choose education "grade"')
+        message += ((message.length != 0) ? '<br />' : '') + 'User Grade can not be empty';
 
     if (message.length != 0)
     {
@@ -886,6 +880,7 @@ function SaveUserInfo()
     const Username = $('#EditUserUsername').val();
     const Email = ($('#EditUserEmail').val()) ? $('#EditUserEmail').val() : ' ';
     const Identifier = $('#EditUserIdentifier').val();
+    const Grade = $('#EditUserGrade').val();
     var UserMetadata = $('#EditUserMetadata').val();
 
     try
@@ -898,7 +893,7 @@ function SaveUserInfo()
         return;
     }
 
-    $.post(USERSAPI_V1, { type : 'EditUser', Name : Name, Username : Username, Email : Email, Identifier : Identifier, Metadata : UserMetadata})
+    $.post(USERSAPI_V1, { type : 'EditUser', Name : Name, Username : Username, Email : Email, Identifier : Identifier, Grade : Grade, Metadata : UserMetadata})
         .done(function(data)
         {
             if (data.hasOwnProperty('error'))
@@ -928,6 +923,26 @@ $(function()
         {
             event.preventDefault();
             PerformSearch();
+        }
+    });
+
+    $.post('GAPIPAL.php', { Plugin : '', c : 'list' }, function(data)
+    {
+        if (data.hasOwnProperty('error'))
+            ShowError(data['error']);
+        else
+        {
+            for (var i = 0; i < data['data'].length; i++)
+            {
+                var script = document.createElement('script');
+                script.src = 'plugins/' + data['data'][i] + '/assets/' + data['data'][i] + '.js';
+                document.head.appendChild(script);
+            }
+        }
+        if (window.location.hash)
+        {
+            if (window.location.hash != 'Search' && eval('typeof Show' + window.location.hash.substring(1)) == 'function')
+                window['Show' + window.location.hash.substring(1)]();
         }
     });
 
@@ -975,10 +990,4 @@ $(function()
             PerformSearchUser();
         }
     });
-
-    if (window.location.hash)
-    {
-        if (window.location.hash != 'Search' && eval('typeof Show' + window.location.hash.substring(1)) == 'function')
-            window['Show' + window.location.hash.substring(1)]();
-    }
 });

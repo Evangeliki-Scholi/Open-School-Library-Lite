@@ -30,6 +30,33 @@ if (2 < $elevated)
                 </form>
             </div>
 ';
+    echo '            <div id="passwordResetPage" style="visibility: collapse; height: 0px">
+                <div class="row">
+                    <div class="col-10">
+                        <input type="text" class="form-control" id="passwordResetUsername" placeholder="Username">
+                    </div>
+                    <div class="col-2">
+                        <button type="button" class="btn btn-primary btn-block" onclick="SendResetPasswordCode()">Send Reset Password Code</button>
+                    </div>
+                </div>
+                <br />
+                <div class="row">
+                    <div class="col-6">
+                        <input type="text" class="form-control" id="passwordResetCode" placeholder="Code from email">
+                    </div>
+                    <div class="col-6">
+                        <input type="password" class="form-control" id="passwordResetPassword" placeholder="New password">
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-12">
+                        <button type="button" class="btn btn-primary btn-block" onclick="ResetPasssword()">Reset password</button>
+                    </div>
+                </div>
+            </div>
+';
     include_once 'footer.php';
     die();
 }
@@ -95,11 +122,14 @@ if (2 < $elevated)
                 </div>
                 <br />
                 <div class="row">
-                    <div class="col-5">
+                    <div class="col-4">
                         <input type="text" class="form-control" id="BorrowUserID" placeholder='User Identification'>
                     </div>
-                    <div class="col-5">
+                    <div class="col-4">
                         <input type="text" class="form-control" id="BorrowUserName" readonly>
+                    </div>
+                    <div class="col-2">
+                        <input type="text" class="form-control" id="BorrowUserGrade" readonly>
                     </div>
                     <div class="col-2">
                         <button type="button" class="btn btn-primary btn-block" onclick="FindBorrowUser()">Find User</button>
@@ -109,7 +139,7 @@ if (2 < $elevated)
                 <br />
                 <div class="row">
                     <div class="col-12">
-                        <button type="button" class="btn btn-primary btn-block" onclick="BorrowBook()">Borrow book</button>
+                        <button type="button" class="btn btn-primary btn-block" id="BorrowBookBtn" onclick="BorrowBook()">Borrow book</button>
                     </div>
                 </div>
             </div>
@@ -257,6 +287,29 @@ if (2 < $elevated)
                     </div>
                 </div>
                 <br />
+                <div class="row">
+                    <div class="col-6">
+                        <select class="form-control" id="AddUserGrade">
+                            <option selected>Please choose education "grade"</option>
+                            <option>Teacher</option>
+                            <option>Primary: 1st Grade</option>
+                            <option>Primary: 2nd Grade</option>
+                            <option>Primary: 3rd Grade</option>
+                            <option>Primary: 4th Grade</option>
+                            <option>Primary: 5th Grade</option>
+                            <option>Primary: 6th Grade</option>
+                            <option>Middle School: 1st Grade</option>
+                            <option>Middle School: 2nd Grade</option>
+                            <option>Middle School: 3rd Grade</option>
+                            <option>High School: 1st Grade</option>
+                            <option>High School: 2nd Grade</option>
+                            <option>High School: 3rd Grade</option>
+                            <option>University</option>
+                            <option>Does not attend any educational program</option>
+                        </select>
+                    </div>
+                </div>
+                <br />
                 <br />
                 <div class="row">
                     <div class="col-12">
@@ -308,8 +361,28 @@ if (2 < $elevated)
                 </div>
                 <br />
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-6">
                         <input type="text" class="form-control" id="EditUserEmail" placeholder="Email">
+                    </div>
+                    <div class="col-6">
+                        <select class="form-control" id="EditUserGrade">
+                            <option selected>Please choose education "grade"</option>
+                            <option>Teacher</option>
+                            <option>Primary: 1st Grade</option>
+                            <option>Primary: 2nd Grade</option>
+                            <option>Primary: 3rd Grade</option>
+                            <option>Primary: 4th Grade</option>
+                            <option>Primary: 5th Grade</option>
+                            <option>Primary: 6th Grade</option>
+                            <option>Middle School: 1st Grade</option>
+                            <option>Middle School: 2nd Grade</option>
+                            <option>Middle School: 3rd Grade</option>
+                            <option>High School: 1st Grade</option>
+                            <option>High School: 2nd Grade</option>
+                            <option>High School: 3rd Grade</option>
+                            <option>University</option>
+                            <option>Does not attend any educational program</option>
+                        </select>
                     </div>
                 </div>
                 <br />

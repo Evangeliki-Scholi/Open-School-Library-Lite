@@ -4,14 +4,16 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+chdir(dirname(__FILE__));
+
 session_start();
 $elevated = (isset($_SESSION['Logged in']) && isset($_SESSION['Level'])) ? $_SESSION['Level'] : 3;
 
 $permissionLevels = array(
-    0 => array('AddAdmin', 'AddUser', 'CheckUserExists', 'EditSelf', 'EditUser',            'GetSelf', 'GetUser',         'LogOut', 'RemoveUser', 'SearchUsers'),
-    1 => array(            'AddUser', 'CheckUserExists', 'EditSelf', 'EditUser',            'GetSelf', 'GetUser',         'LogOut', 'RemoveUser', 'SearchUsers'),
+    0 => array('AddAdmin', 'AddUser', 'CheckUserExists', 'EditSelf', 'EditUser',            'GetSelf', 'GetUser',         'LogOut',                  'RemoveUser', 'SearchUsers'),
+    1 => array(            'AddUser', 'CheckUserExists', 'EditSelf', 'EditUser',            'GetSelf', 'GetUser',         'LogOut',                  'RemoveUser', 'SearchUsers'),
     2 => array(                       'CheckUserExists', 'EditSelf',                        'GetSelf',                    'LogOut'),
-    3 => array(                                                                  'GetAlgo',                      'LogIn')
+    3 => array(                                                                  'GetAlgo',                      'LogIn',           'PasswordReset')
 );
 
 function AddAdmin($permissionLevels, $elevated)
@@ -49,18 +51,19 @@ function AddAdmin($permissionLevels, $elevated)
     $Password = password_hash($_POST['Password'], PASSWORD_DEFAULT);
     $Algo = $_POST['Algo'];
     $Level = (int)$_POST['Level'];
+    $Grade = (isset($_POST['Grade'])) ? $_POST['Grade'] : NULL;
 
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
 
-    $query = 'INSERT INTO `users` (`ID`, `Identifier`, `Name`, `Username`, `Email`, `Password`, `Algo`, `Level`, `Metadata`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, "{}");';
+    $query = 'INSERT INTO `users` (`ID`, `Identifier`, `Name`, `Username`, `Email`, `Password`, `Algo`, `Level`, `Grade`, `Metadata`) VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, "{}");';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
-    $statement->bind_param('ssssssi', $Identifier, $Name, $Username, $Email, $Password, $Algo, $Level);
+    $statement->bind_param('ssssssis', $Identifier, $Name, $Username, $Email, $Password, $Algo, $Level, $Grade);
     if (!$statement->execute())
     {
         $statement->close();
@@ -110,18 +113,19 @@ function AddUser($permissionLevels, $elevated)
     $Email = $_POST['Email'];
     $Password = password_hash($_POST['Password'], PASSWORD_DEFAULT);
     $Algo = $_POST['Algo'];
+    $Grade = $_POST['Grade'];
 
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
 
-    $query = 'INSERT INTO `users` (`ID`, `Identifier`, `Name`, `Username`, `Email`, `Password`, `Algo`, `Level`, `Metadata`) VALUES (NULL, ?, ?, ?, ?, ?, ?, 2, "{}");';
+    $query = 'INSERT INTO `users` (`ID`, `Identifier`, `Name`, `Username`, `Email`, `Password`, `Algo`, `Level`, `Grade`, `Metadata`) VALUES (NULL, ?, ?, ?, ?, ?, ?, 2, ?, "{}");';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
         $conn->close();
         return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
-    $statement->bind_param('ssssss', $Identifier, $Name, $Username, $Email, $Password, $Algo);
+    $statement->bind_param('sssssss', $Identifier, $Name, $Username, $Email, $Password, $Algo, $Grade);
     if (!$statement->execute())
     {
         $statement->close();
@@ -295,6 +299,7 @@ function EditUser($permissionLevels, $elevated)
     $Name = (isset($_POST['Name'])) ? $_POST['Name'] : NULL;
     $Username = (isset($_POST['Username'])) ? $_POST['Username'] : NULL;
     $Email = (isset($_POST['Email'])) ? $_POST['Email'] : NULL;
+    $Grade = (isset($_POST['Grade'])) ? $_POST['Grade'] : NULL;
     $Metadata = NULL;
     if (isset($_POST['Metadata']))
     {
@@ -316,13 +321,15 @@ function EditUser($permissionLevels, $elevated)
         $Username = $user['data']['Username'];
     if ($Email == NULL)
         $Email = $user['data']['Email'];
+    if ($Grade == NULL)
+        $Grade = $user['data']['Grade'];
     if ($Metadata == NULL)
         $Metadata = $user['data']['Email'];
 
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
     
-    $query = 'UPDATE `users` SET `users`.`Name` = ?, `users`.`Username` = ?, `users`.`Email` = ?, `users`.`Metadata` = ? WHERE `users`.`Identifier` = ?;';
+    $query = 'UPDATE `users` SET `users`.`Name` = ?, `users`.`Username` = ?, `users`.`Email` = ?, `users`.`Grade` = ?, `users`.`Metadata` = ? WHERE `users`.`Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -330,7 +337,7 @@ function EditUser($permissionLevels, $elevated)
         return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
     }
 
-    $statement->bind_param('sssss', $Name, $Username, $Email, $Metadata, $Identifier);
+    $statement->bind_param('ssssss', $Name, $Username, $Email, $Grade, $Metadata, $Identifier);
     if (!$statement->execute())
     {
         $statement->close();
@@ -344,7 +351,7 @@ function EditUser($permissionLevels, $elevated)
     if ($user['response'] == false)
         return array('response' => false, 'error' => 'Unexpected error');
 
-    if ($user['data']['Name'] != $Name || $user['data']['Username'] != $Username || $user['data']['Email'] != $Email)
+    if ($user['data']['Name'] != $Name || $user['data']['Username'] != $Username || $user['data']['Email'] != $Email || $user['data']['Grade'] != $Grade)
     {
         $statement->close();
         $conn->close();
@@ -404,7 +411,7 @@ function GetSelf($permissionLevels, $elevated)
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
     
-    $query = 'SELECT `Name`, `Username`, `Email`, `Level`, `Metadata`  FROM `users` WHERE `users`.`Identifier` = ?;';
+    $query = 'SELECT `Name`, `Username`, `Email`, `Level`, `Metadata`, `Grade`  FROM `users` WHERE `users`.`Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -442,7 +449,7 @@ function GetUser($permissionLevels, $elevated)
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
     
-    $query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Level`, `Metadata`  FROM `users` WHERE `users`.`Identifier` = ?;';
+    $query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Level`, `Metadata`, `Grade`  FROM `users` WHERE `users`.`Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -483,7 +490,7 @@ function LogIn($permissionLevels, $elevated)
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
 
-    $query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Password`, `Level` FROM `users` WHERE `'.(isset($_POST['Email']) ? 'Email' : 'Username').'` = ?;';
+    $query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Password`, `Level`, `Grade` FROM `users` WHERE `'.(isset($_POST['Email']) ? 'Email' : 'Username').'` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -512,6 +519,7 @@ function LogIn($permissionLevels, $elevated)
             $_SESSION['Email'] = $row['Email'];
             $_SESSION['Identifier'] = $row['Identifier'];
             $_SESSION['Level'] = $row['Level'];
+            $_SESSION['Grade'] = $row['Grade'];
             break;
         }
     }
@@ -523,9 +531,123 @@ function LogOut($permissionLevels, $elevated)
 {
     $_SESSION['Logged in'] = false;
     $_SESSION['Level'] = 3;
-    $_SESSION['Name'] = $_SESSION['Username'] = $_SESSION['Email'] = '';
+    $_SESSION['Name'] = $_SESSION['Username'] = $_SESSION['Email'] = $_SESSION['Grade'] = '';
 
     return array('response' => true);
+}
+
+function PasswordReset($permissionLevels, $elevated)
+{
+    if (!array_key_exists($elevated, $permissionLevels) || !in_array(__FUNCTION__, $permissionLevels[$elevated]))
+        return array('response' => false, 'error' => 'You do not have the right permissions');
+    
+    if (!isset($_POST['Username']))
+        return array('response' => false, 'error' => 'No Username was passed in user API V1');
+    
+    require_once '../../sql_connection.php';
+    $conn = GetDBConnection();
+
+    $Username = $_POST['Username'];
+
+
+    $query = 'SELECT `Email`, `Metadata` FROM `users` WHERE `users`.`Username` = ?;';
+    $statement = $conn->prepare($query);
+    if (!$statement)
+    {
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+    }
+
+    $statement->bind_param('s', $Username);
+    if (!$statement->execute())
+    {
+        $statement->close();
+        $conn->close();
+        return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+    }
+
+    $result = $statement->get_result();
+    if ($result->num_rows == 0)
+        return array('response' => false, 'error' => 'No users were found with this Username');
+    $row = $result->fetch_assoc();
+
+    if ($row['Email'] == '')
+        return array('response' => false, 'error' => 'This username is not connected to an email');
+
+    $Metadata = json_decode($row['Metadata'], true);
+    if (json_last_error() != JSON_ERROR_NONE)
+        return array('response' => false, 'error' => 'Corrupted user data. Please ask a Administator to remove user metadata');
+
+
+    if (isset($_POST['Code']) && isset($_POST['Password']) && isset($_POST['Algo']))// Reset Password
+    {   
+        if (isset($Metadata['PasswordReset']) && isset($Metadata['PasswordReset']['Code']) && password_verify($_POST['Code'], $Metadata['PasswordReset']['Code']))
+        {
+            unset($Metadata['PasswordReset']);
+            $Metadata = json_encode($Metadata);
+            $query = 'UPDATE `users` SET `users`.`Password` = ?, `users`.`Algo` = ?, `users`.`Metadata` = ? WHERE `users`.`Username` = ?;';
+            $statement = $conn->prepare($query);
+            if (!$statement)
+            {
+                $conn->close();
+                return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+            }
+
+            $Password = password_hash($_POST['Password'], PASSWORD_DEFAULT);
+            $statement->bind_param('ssss', $Password, $_POST['Algo'], $Metadata, $Username);
+            if (!$statement->execute())
+            {
+                $statement->close();
+                $conn->close();
+                return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+            }
+            return array('response' => true);
+        }
+        else
+            return array('response' => false, 'error' => 'Unexpected error');
+    }
+    else                                                                            // Send Password Reset Code
+    {
+        $Code = 'Test';
+        $Code = password_hash($Code, PASSWORD_DEFAULT);
+        
+        $Metadata['PasswordReset'] = array('Code' => $Code);
+        
+        require 'phpmailer/class.smtp.php';
+        require 'phpmailer/class.phpmailer.php';
+        $mail = new PHPMailer();
+        $mail->IsSMTP();
+        $mail->SMTPAuth = true;
+        $mail->Host = 'host';
+        $mail->Username = 'username';
+        $mail->Password = 'password';
+        $mail->From = 'from';
+        $mail->FromName = 'Open School Library Lite';
+        $mail->AddAddress($row['Email']);
+        $mail->IsHTML(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->Subject = 'Password Reset';
+        $mail->Body = 'This is an automated email response from the Open School Library Lite.<br />You have recently requested a password reset code. Your password reset code is "'.$Code.'"<br /><br />Sent by Open School Library Lite. <3 from the FLOSS Community.';
+        $mail->Send();
+
+        $Metadata = json_encode($Metadata);
+        $query = 'UPDATE `users` SET `users`.`Metadata` = ? WHERE `users`.`Username` = ?;';
+        $statement = $conn->prepare($query);
+        if (!$statement)
+        {
+            $conn->close();
+            return array('response' => false, 'error' => 'Could not prepare statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+        }
+
+        $statement->bind_param('ss', $Metadata, $Username);
+        if (!$statement->execute())
+        {
+            $statement->close();
+            $conn->close();
+            return array('response' => false, 'error' => 'Could not execute statement in '.__FILE__.':'.__FUNCTION__.':'.__LINE__);
+        }
+        return array('response' => true);
+    }
 }
 
 function RemoveUser($permissionLevels, $elevated)
@@ -587,7 +709,7 @@ function SearchUsers($permissionLevels, $elevated)
     require_once '../../sql_connection.php';
     $conn = GetDBConnection();
     
-    $query = 'SELECT `Identifier`, `Name` FROM `users` WHERE ( UPPER(`users`.`Name`) LIKE UPPER(?) OR UPPER(`users`.`Username`) LIKE UPPER(?) OR UPPER(`users`.`Email`) LIKE UPPER(?) OR UPPER(`users`.`Identifier`) LIKE UPPER(?) ) LIMIT 10;';
+    $query = 'SELECT `Identifier`, `Name`, `Grade`  FROM `users` WHERE ( UPPER(`users`.`Name`) LIKE UPPER(?) OR UPPER(`users`.`Username`) LIKE UPPER(?) OR UPPER(`users`.`Email`) LIKE UPPER(?) OR UPPER(`users`.`Identifier`) LIKE UPPER(?) ) LIMIT 10;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {

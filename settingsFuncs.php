@@ -2,7 +2,9 @@
 
 if (!isset($_SESSION))
     session_start();
-$elevated = (isset($_SESSION['Logged in']));
+$elevated = (isset($_SESSION['Logged in']) && isset($_SESSION['Level'])) ? $_SESSION['Level'] : 3;
+if ($elevated != 0)
+    header('LOCATION: index.php');
 
 function changeSetting($functionName, $value)
 {
@@ -37,7 +39,7 @@ function getAllSettingsJSON()
     }
 }
 
-if (isset($_POST['type']) && $elevated)
+if (isset($_POST['type']))
 {
 
     $type = $_POST['type'];

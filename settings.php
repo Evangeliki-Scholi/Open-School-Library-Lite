@@ -7,7 +7,9 @@
   'Edit Book' => 'Edit Book',
   'New Book' => 'New Book',
   'New User' => 'New User',
+  'Edit User' => 'Edit User',
   'Check Update' => 'Check for Update',
   'Search' => 'Search',
-  'Settings' => 'Settings'
+  'Settings' => 'Settings',
+  'Account' => 'Account'
 ); ?>

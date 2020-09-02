@@ -127,7 +127,7 @@ function BorrowBook($permissionLevels, $elevated)
 
     $dateInTwoWeeks = date("Y-m-d", strtotime('+2 weeks'));
 
-    $statement->bind_param('iss', $UserID, $dateInTwoWeeks,$Identifier);
+    $statement->bind_param('sss', $UserID, $dateInTwoWeeks,$Identifier);
     if (!$statement->execute())
     {
         $statement->close();

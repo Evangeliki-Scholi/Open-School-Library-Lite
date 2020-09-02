@@ -94,8 +94,6 @@ function AddUser($permissionLevels, $elevated)
         return array('response' => false, 'error' => 'Name can not be empty');
     if (!isset($_POST['Username']) || $_POST['Username'] == '')
         return array('response' => false, 'error' => 'Username can not be empty');
-    if (!isset($_POST['Email']) || $_POST['Email'] == '')
-        return array('response' => false, 'error' => 'Email can not be empty');
     if (!isset($_POST['Password']) || $_POST['Password'] == '')
         return array('response' => false, 'error' => 'Password can not be empty');
     if (!isset($_POST['Algo']) || $_POST['Algo'] == '')
@@ -110,7 +108,7 @@ function AddUser($permissionLevels, $elevated)
     $Identifier = $_POST['Identifier'];
     $Name = $_POST['Name'];
     $Username = $_POST['Username'];
-    $Email = $_POST['Email'];
+    $Email = (isset($_POST['Email'])) ? $_POST['Email'] : NULL;
     $Password = password_hash($_POST['Password'], PASSWORD_DEFAULT);
     $Algo = $_POST['Algo'];
     $Grade = $_POST['Grade'];

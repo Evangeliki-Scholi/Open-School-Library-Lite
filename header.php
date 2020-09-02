@@ -29,8 +29,8 @@ function GetSetting ($name)
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
         <script>const elevated = <?php echo $elevated; ?>;</script>
-        <script src="js/alert.js"></script>
-        <script src="js/mainPreload.js"></script>
+        <script src="js/alert.min.js"></script>
+        <script src="js/mainPreload.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha512/0.8.0/sha512.min.js"></script>
     </head>
     <body>
@@ -43,7 +43,7 @@ function GetSetting ($name)
             <div class="collapse navbar-collapse" id="collapsableNavBar">
                 <ul class="navbar-nav mr-auto" id="navbarItems">
                     <li class="nav-item active">
-                    <li class="nav-item active"><button type="button" class="btn btn-link" style="color:#FFFFFF;text-decoration: none !important" onclick="ShowIndex()"><?php echo GetSetting('Home'); ?></button></li>
+                    <li class="nav-item active"><button type="button" class="btn btn-link" style="color:#FFFFFF;text-decoration: none !important" onclick="Show('Index');"><?php echo GetSetting('Home'); ?></button></li>
                     </li>
                 <?php
                     if ($elevated < 2)
@@ -52,13 +52,13 @@ function GetSetting ($name)
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Books</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowBorrowBook();">'.GetSetting('Borrow').'</button>
+                        echo '<button class="dropdown-item" onclick="Show(\'BorrowBook\');">'.GetSetting('Borrow').'</button>
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowReturnBook();">'.GetSetting('Return').'</button>
+                        echo '<button class="dropdown-item" onclick="Show(\'ReturnBook\');">'.GetSetting('Return').'</button>
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowEditBook();">'.GetSetting('Edit Book').'</button>
+                        echo '<button class="dropdown-item" onclick="Show(\'EditBook\');">'.GetSetting('Edit Book').'</button>
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowAddBook();">'.GetSetting('New Book').'</button>
+                        echo '<button class="dropdown-item" onclick="Show(\'AddBook\');">'.GetSetting('New Book').'</button>
                         ';
                         echo '</div>
                     </li>
@@ -68,10 +68,10 @@ function GetSetting ($name)
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Users</a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowAddUser();">'.GetSetting('New User').'</button>
+                        echo '<button class="dropdown-item" onclick="Show(\'EditUser\');">'.GetSetting('Edit User').'</button>
                             ';
-                        echo '<button class="dropdown-item" onclick="ShowEditUser();">'.GetSetting('Edit User').'</button>
-                        ';
+                        echo '<button class="dropdown-item" onclick="Show(\'AddUser\');">'.GetSetting('New User').'</button>
+                            ';
                         echo '</div>
                     </li>
                     ';
@@ -85,16 +85,16 @@ function GetSetting ($name)
                     }
                 ?>
 </ul>
-                <input class="form-control" style="width: 40%" type="search" placeholder="<?php echo GetSetting('Search'); ?>" aria-label="Search" id="tagBook">
+                <input class="form-control" style="width: 30%" type="search" placeholder="<?php echo GetSetting('Search'); ?>" aria-label="Search" id="tagBook">
                 &nbsp;&nbsp;
                 <button class="btn btn-outline-success my-2 my-sm-0" onclick="PerformSearch();"><?php echo GetSetting('Search'); ?></button>
                 &nbsp;&nbsp;
                 <?php
                     if ($elevated < 3)
-                        echo '<button class="btn btn-outline-success my-2 my-sm-0" onclick="ShowAccount()">'.GetSetting('Account').'</button>
+                        echo '<button class="btn btn-outline-success my-2 my-sm-0" onclick="Show(\'Account\');">'.GetSetting('Account').'</button>
 ';
                     else
-                        echo '<button class="btn btn-outline-success my-2 my-sm-0" onclick="ShowLogin()">'.GetSetting('Login').'</button>
+                        echo '<button class="btn btn-outline-success my-2 my-sm-0" onclick="Show(\'Login\')">'.GetSetting('Login').'</button>
 ';
                 ?>
             </div>

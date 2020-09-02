@@ -101,6 +101,8 @@ function listPlugin($elevated)
 
 function loadPlugin($elevated)
 {
+    require 'sql_connection';
+
     if (!isset($_POST['name']) || $_POST['name'] == '')
         return array('response' => false, 'error' => 'No name for the plugin to load was given');
 
@@ -119,7 +121,7 @@ function loadPlugin($elevated)
     if (!function_exists($_POST['name']))
         return array('response' => false, 'error' => 'The plugin "'.$_POST['name'].'" is malformated');
     
-    return $_POST['name']();
+    return $_POST['name'](GetDBConnection());
 }
 
 function loadAssetPlugin($elevated)

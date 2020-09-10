@@ -1,1 +1,2 @@
 ErrorDocument 404 "<script>window.location.href='index.php#404';</script>"
+AddHandler php7 .php

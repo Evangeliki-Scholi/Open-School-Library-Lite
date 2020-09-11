@@ -4,6 +4,7 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+header('access-control-allow-origin *');
 chdir(dirname(__FILE__));
 
 session_start();
@@ -127,7 +128,7 @@ function BorrowBook($permissionLevels, $elevated)
 
     $dateInTwoWeeks = date("Y-m-d", strtotime('+2 weeks'));
 
-    $statement->bind_param('iss', $UserID, $dateInTwoWeeks,$Identifier);
+    $statement->bind_param('sss', $UserID, $dateInTwoWeeks,$Identifier);
     if (!$statement->execute())
     {
         $statement->close();

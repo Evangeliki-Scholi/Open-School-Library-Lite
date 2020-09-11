@@ -2,6 +2,7 @@
   'Site Name' => 'Open School Library Lite',
   'Welcome Message' => 'Hello and welcome',
   'Home' => 'Home',
+  'PageNotFound' => 'Page Not Found',
   'Borrow' => 'Borrow',
   'Return' => 'Return',
   'Edit Book' => 'Edit Book',

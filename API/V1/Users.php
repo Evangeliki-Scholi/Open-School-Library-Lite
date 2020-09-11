@@ -4,6 +4,7 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
+header('access-control-allow-origin *');
 chdir(dirname(__FILE__));
 
 session_start();
@@ -94,8 +95,6 @@ function AddUser($permissionLevels, $elevated)
         return array('response' => false, 'error' => 'Name can not be empty');
     if (!isset($_POST['Username']) || $_POST['Username'] == '')
         return array('response' => false, 'error' => 'Username can not be empty');
-    if (!isset($_POST['Email']) || $_POST['Email'] == '')
-        return array('response' => false, 'error' => 'Email can not be empty');
     if (!isset($_POST['Password']) || $_POST['Password'] == '')
         return array('response' => false, 'error' => 'Password can not be empty');
     if (!isset($_POST['Algo']) || $_POST['Algo'] == '')
@@ -110,7 +109,7 @@ function AddUser($permissionLevels, $elevated)
     $Identifier = $_POST['Identifier'];
     $Name = $_POST['Name'];
     $Username = $_POST['Username'];
-    $Email = $_POST['Email'];
+    $Email = (isset($_POST['Email'])) ? $_POST['Email'] : NULL;
     $Password = password_hash($_POST['Password'], PASSWORD_DEFAULT);
     $Algo = $_POST['Algo'];
     $Grade = $_POST['Grade'];
@@ -508,6 +507,8 @@ function LogIn($permissionLevels, $elevated)
 
     $result = $statement->get_result();
     $numOfRows = $result->num_rows;
+    if ($numOfRows == 0)
+	    return array('response' => false, 'error' => 'No users found');
     for ($i = 0; $i < $numOfRows; $i++)
     {
         $row = $result->fetch_assoc();
@@ -520,11 +521,11 @@ function LogIn($permissionLevels, $elevated)
             $_SESSION['Identifier'] = $row['Identifier'];
             $_SESSION['Level'] = $row['Level'];
             $_SESSION['Grade'] = $row['Grade'];
-            break;
+            return array('response' => true);
         }
     }
     
-    return array('response' => isset($_SESSION['Logged in']));
+    return array('response' => false);
 }
 
 function LogOut($permissionLevels, $elevated)
@@ -618,10 +619,10 @@ function PasswordReset($permissionLevels, $elevated)
         $mail = new PHPMailer();
         $mail->IsSMTP();
         $mail->SMTPAuth = true;
-        $mail->Host = 'host';
-        $mail->Username = 'username';
-        $mail->Password = 'password';
-        $mail->From = 'from';
+        $mail->Host = 'websitemail.sch.gr';
+        $mail->Username = 'lykevsch';
+        $mail->Password = '5ek4re13';
+        $mail->From = 'mail@lyk-evsch-n-smyrn.att.sch.gr';
         $mail->FromName = 'Open School Library Lite';
         $mail->AddAddress($row['Email']);
         $mail->IsHTML(true);

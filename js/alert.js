@@ -7,7 +7,7 @@ function CreateBannerID() {
     var result = '';
     var allCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = allCharacters.length;
-    for ( var i = 0; i < 12; i++ )
+    for (var i = 0; i < 12; i++)
        result += allCharacters.charAt(Math.floor(Math.random() * charactersLength));
     return result;
  }
@@ -15,7 +15,7 @@ function CreateBannerID() {
 function DeleteBanner(bannerID)
 {
     var banner = document.getElementById(bannerID);
-    if (banner === null) return;
+    if (banner == null) return;
     banner.parentNode.removeChild(banner);
 }
 

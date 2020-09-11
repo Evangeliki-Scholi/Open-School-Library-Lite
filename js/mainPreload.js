@@ -138,8 +138,11 @@ function CheckHandleError(data)
     return true;
 }
 
-const BOOKAPI_V1 = '/API/V1/Book.php';
-const USERSAPI_V1 = '/API/V1/Users.php';
+var href = window.location.href;
+var dir = href.substring(0, href.lastIndexOf('/')) + "/";
+
+const BOOKAPI_V1 = dir + '/API/V1/Book.php';
+const USERSAPI_V1 = dir + '/API/V1/Users.php';
 
 /**
  * New AddBook Function
@@ -210,7 +213,7 @@ function AddUser()
         return;
     }
     UserMetadata.value = '{}';
-    var postData = { type : 'AddUser', Identifier : UserID.value, Name : UserName.value, Username : UserUsername.value, Email : UserEmail.value, Password : sha512_256(UserPassword.value), Algo : 'sha256', Grade : UserGrade.value, Metadata : UserMetadata.value };
+    var postData = { type : 'AddUser', Identifier : UserID.value, Name : UserName.value, Username : UserUsername.value, Email : UserEmail.value, Password : sha256(UserPassword.value), Algo : 'sha256', Grade : UserGrade.value, Metadata : UserMetadata.value };
     $.post(USERSAPI_V1, postData, function(data)
         {
             if (CheckHandleError(data))
@@ -255,12 +258,16 @@ function BorrowBook()
  */
 function SetBook(Identifier = '', Title = '', Author = '', Dewey = '', ISBN = '', Metadata = '')
 {
-    BookID.value = Identifier;
-    BookTitle.value = Title;
-    BookAuthor.value = Author;
-    BookDewey.value = Dewey;
-    BookISBN.value = ISBN;
-    BookMetadata.value = Metadata;
+    try
+    {
+        BookID.value = Identifier;
+        BookTitle.value = Title;
+        BookAuthor.value = Author;
+        BookDewey.value = Dewey;
+        BookISBN.value = ISBN;
+        BookMetadata.value = Metadata;
+    }
+    catch { }
 }
 
 /**
@@ -290,13 +297,17 @@ function FindBook()
  */
 function SetUser(Identifier = '', Name = '', Username = '', Email = '', Grade = 'Please choose education "grade"', Metadata = '')
 {
-    UserID.value = Identifier;
-    UserName.value = Name;
-    UserUsername.value = Username;
-    UserEmail.value = Email;
-    UserGrade.value = Grade;
-    UserMetadata.value = Metadata;
-    UserPassword.value = '';
+    try
+    {
+        UserID.value = Identifier;
+        UserName.value = Name;
+        UserUsername.value = Username;
+        UserEmail.value = Email;
+        UserGrade.value = Grade;
+        UserMetadata.value = Metadata;
+        UserPassword.value = '';
+    }
+    catch { }
 }
 
 /**
@@ -418,7 +429,7 @@ async function LogIn()
     switch (data['data'])
     {
         case 'sha256':
-            password = sha512_256(password);
+            password = sha256(password);
             break;
         case 'sha512':
             password = sha512(password);
@@ -666,7 +677,7 @@ function SaveInfos()
         newPassword = '';
     if (newPassword != '')
     {
-        rdata['Password'] = sha512_256(newPassword);
+        rdata['Password'] = sha256(newPassword);
         rdata['Algo'] = 'sha256';
     }
 
@@ -810,47 +821,61 @@ $(function()
         for (var i = 0; i < data['data'].length; i++)
         {
             var script = document.createElement('script');
-            script.src = 'plugins/' + data['data'][i] + '/assets/' + data['data'][i] + '.js';
+            script.src = dir + 'plugins/' + data['data'][i] + '/assets/' + data['data'][i] + '.js';
             document.head.appendChild(script);
         }
     });
 
-    BookIdentifier.addEventListener('keyup', function(event)
-        {
-            if (event.code == 'Enter')
+    if (BookIdentifier != null)
+        BookIdentifier.addEventListener('keyup', function(event)
             {
-                event.preventDefault();
-                GetBookBtn.click();
-            }
-        });
+                if (event.code == 'Enter')
+                {
+                    event.preventDefault();
+                    GetBookBtn.click();
+                }
+            });
 
-    UserIdentifier.addEventListener('keyup', function(event)
-        {
-            if (event.code == 'Enter')
+    if (UserIdentifier != null)
+        UserIdentifier.addEventListener('keyup', function(event)
             {
-                event.preventDefault();
-                GetUserBtn.click();
-            }
-        });
+                if (event.code == 'Enter')
+                {
+                    event.preventDefault();
+                    GetUserBtn.click();
+                }
+            });
 
-    UserSearch.addEventListener('keyup', function(event)
-        {
-            if (event.code == 'Enter')
+    if (UserSearch != null)
+        UserSearch.addEventListener('keyup', function(event)
             {
-                event.preventDefault();
-                SearchUserBtn.click();
-            }
-        });
+                if (event.code == 'Enter')
+                {
+                    event.preventDefault();
+                    SearchUserBtn.click();
+                }
+            });
 
-    AddBookBtn.addEventListener('click', AddBook);
-    AddUserBtn.addEventListener('click', AddUser);
-    BorrowBookBtn.addEventListener('click', BorrowBook);
-    GetBookBtn.addEventListener('click', FindBook);
-    GetUserBtn.addEventListener('click', FindUser);
-    RemoveBookBtn.addEventListener('click', RemoveBook);
-    RemoveUserBtn.addEventListener('click', RemoveUser);
-    ReturnBookBtn.addEventListener('click', ReturnBook);
-    SaveBookBtn.addEventListener('click', SaveBookInfo);
-    SaveUserBtn.addEventListener('click', SaveUserInfo);
-    SearchUserBtn.addEventListener('click', SearchUser);
+    if (AddBookBtn != null)
+        AddBookBtn.addEventListener('click', AddBook);
+    if (AddUserBtn != null)
+        AddUserBtn.addEventListener('click', AddUser);
+    if (BorrowBookBtn != null)
+        BorrowBookBtn.addEventListener('click', BorrowBook);
+    if (GetBookBtn != null)
+        GetBookBtn.addEventListener('click', FindBook);
+    if (GetUserBtn != null)
+        GetUserBtn.addEventListener('click', FindUser);
+    if (RemoveBookBtn != null)
+        RemoveBookBtn.addEventListener('click', RemoveBook);
+    if (RemoveUserBtn != null)
+        RemoveUserBtn.addEventListener('click', RemoveUser);
+    if (ReturnBookBtn != null)
+        ReturnBookBtn.addEventListener('click', ReturnBook);
+    if (SaveBookBtn != null)
+        SaveBookBtn.addEventListener('click', SaveBookInfo);
+    if (SaveUserBtn != null)
+        SaveUserBtn.addEventListener('click', SaveUserInfo);
+    if (SearchUserBtn != null)
+        SearchUserBtn.addEventListener('click', SearchUser);
 });

@@ -118,7 +118,7 @@ function BorrowBook($permissionLevels, $elevated)
     else if (isset($borrowed['error']))
         return $borrowed;
 
-    $query = 'UPDATE `books` SET `Availability` = 0, `BorrowedByID` = ?, `BorrowedUntil` = ? WHERE `Identifier` = ?;';
+    $query = 'UPDATE `books` SET `Availability` = 0, `BorrowedByID` = ?, `BorrowedUntill` = ? WHERE `Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -362,7 +362,7 @@ function GetBook($permissionLevels, $elevated)
     if (isset($exists['error']))
         return array('response' => false, 'error' => $exists['error']);
 
-    $query = 'SELECT `Identifier`, `Title`, `Author`, `Dewey`, `ISBN`, `Availability`, `BorrowedUntil`, `BorrowedByID`, `Metadata` FROM `books` WHERE `Identifier` = ?;';
+    $query = 'SELECT `Identifier`, `Title`, `Author`, `Dewey`, `ISBN`, `Availability`, `BorrowedUntill`, `BorrowedByID`, `Metadata` FROM `books` WHERE `Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -460,7 +460,7 @@ function ReturnBook($permissionLevels, $elevated)
     else if (isset($borrowed['error']))
         return $borrowed;
 
-    $query = 'UPDATE `books` SET `Availability` = 1, `BorrowedByID` = NULL, `BorrowedUntil` = NULL WHERE `Identifier` = ?;';
+    $query = 'UPDATE `books` SET `Availability` = 1, `BorrowedByID` = NULL, `BorrowedUntill` = NULL WHERE `Identifier` = ?;';
     $statement = $conn->prepare($query);
     if (!$statement)
     {
@@ -493,9 +493,9 @@ function SearchBooks($permissionLevels, $elevated)
 
     $query = '';
     if (0 <= $elevated && $elevated <= 1)
-        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntil`, `users`.`Name` FROM `books` LEFT JOIN `users` ON `books`.`BorrowedByID` = `users`.`Identifier` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntill`, `users`.`Name` FROM `books` LEFT JOIN `users` ON `books`.`BorrowedByID` = `users`.`Identifier` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
     else
-        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntil` FROM `books` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+        $query = 'SELECT `books`.`Identifier`, `books`.`Title`, `books`.`Author`, `books`.`Dewey`, `books`.`ISBN`, `books`.`Availability`, `books`.`BorrowedUntill` FROM `books` WHERE ( UPPER(`books`.`TITLE`) LIKE UPPER(?) OR UPPER(`books`.`Author`) LIKE UPPER(?) OR UPPER(`books`.`Dewey`) LIKE UPPER(?) OR UPPER(`books`.`ISBN`) LIKE UPPER(?) OR `books`.`Identifier` = ?) ORDER BY `books`.`ID` LIMIT '.$Skip.', '.$Limit.';';
     
     $statement = $conn->prepare($query);
     if (!$statement)

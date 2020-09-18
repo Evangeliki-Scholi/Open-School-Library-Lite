@@ -11,7 +11,7 @@ CREATE TABLE `books` (
     `Dewey` text CHARACTER SET utf8 COLLATE utf8_bin,
     `ISBN` text CHARACTER SET utf8 COLLATE utf8_bin,
     `Availability` int NOT NULL,
-    `BorrowedUntil` date DEFAULT NULL,
+    `BorrowedUntill` date DEFAULT NULL,
     `BorrowedByID` text COLLATE utf8_bin,
     `Found` tinyint(1) NOT NULL DEFAULT '0',
     `Metadata` text COLLATE utf8_bin NOT NULL

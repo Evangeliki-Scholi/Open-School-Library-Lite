@@ -816,6 +816,8 @@ $(function()
 
     $.post('GAPIPAL.php', { Plugin : '', c : 'list' }, function(data)
     {
+        if ((elevated != 0 && elevated != 1) && !data['response'])
+            return;
         if (!CheckHandleError(data))
             return;
         for (var i = 0; i < data['data'].length; i++)

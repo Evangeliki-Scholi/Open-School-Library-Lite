@@ -1,5 +1,6 @@
 <?php
 
+/*
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
@@ -735,9 +736,12 @@ function SearchUsers($permissionLevels, $elevated)
 
     return $results;
 }
+*/
 
 header('Content-Type: application/json');
+echo '{"error":"Book API V1 has been deprecated"}';
 
+/*
 if (!isset($_POST['type']))
     die('{ "response" : false, "error" : "User API `type` not provided" }');
 
@@ -745,4 +749,6 @@ if (!function_exists($_POST['type']))
     die('{ "response" : false, "error" : "User API function `'.$_POST['type'].'` does not exist" }');
 
 echo json_encode(($_POST['type']($permissionLevels, $elevated)), JSON_UNESCAPED_UNICODE);
+*/
+
 ?>

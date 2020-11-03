@@ -181,8 +181,7 @@ function LogIn($PermissionLevels, $LogInLevel, $DatabaseConnection)
     $row = $result->fetch_assoc();
     if (password_verify($Password, $row['Password']))
     {
-        if (!isset($_SESSION))
-            session_start();
+        session_start();
         $_SESSION['Logged In'] = true;
         $_SESSION['Identifier'] = $row['Identifier'];
         $_SESSION['Name'] = $row['Name'];

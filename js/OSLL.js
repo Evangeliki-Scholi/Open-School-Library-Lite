@@ -12,7 +12,7 @@ var ShowFunctions = [];
  */
 function AddCard(Card)
 {
-    document.getElementById('ContentBody').appendChild(Card);
+	document.getElementById('ContentBody').appendChild(Card);
 }
 
 /**
@@ -27,11 +27,11 @@ function AddCard(Card)
  */
 function CreateCard(ID, Hash, Header, Color = 'dark', BodyHTML = '', FooterHTML = '')
 {
-    var Card = document.createElement('div');
-    Card.classList += 'card card-' + Color + ' ' + Hash;
-    Card.id = ID;
-    Card.innerHTML = '<div class="card-header" id="Card-' + ID + 'Header"><h3 class="card-title">' + Header + '</h3></div><div class="card-body" id="' + ID + 'Body">' + BodyHTML + '</div><div class="card-footer" id="' + ID + 'Footer">' + FooterHTML + '</div>';
-    return Card;
+	var Card = document.createElement('div');
+	Card.classList += 'card card-' + Color + ' ' + Hash;
+	Card.id = ID;
+	Card.innerHTML = '<div class="card-header" id="Card-' + ID + 'Header"><h3 class="card-title">' + Header + '</h3></div><div class="card-body" id="' + ID + 'Body">' + BodyHTML + '</div><div class="card-footer" id="' + ID + 'Footer">' + FooterHTML + '</div>';
+	return Card;
 }
 
 /**
@@ -40,12 +40,12 @@ function CreateCard(ID, Hash, Header, Color = 'dark', BodyHTML = '', FooterHTML 
  */
 function AddNotification(Notification)
 {
-    document.getElementById('NotificationNumber').innerText = parseInt(document.getElementById('NotificationNumber').innerText) + 1;
-    document.getElementById('NotificationNumberNotifications').innerText = parseInt(document.getElementById('NotificationNumber').innerText) + ' ' + document.getElementById('NotificationNumberNotifications').innerText.split(' ', 2)[1];
-    document.getElementById('NotificationDropDown').appendChild(Notification);
-    var Divider = document.createElement('div');
-    Divider.classList = 'dropdown-divider';
-    document.getElementById('NotificationDropDown').appendChild(Divider);
+	document.getElementById('NotificationNumber').innerText = parseInt(document.getElementById('NotificationNumber').innerText) + 1;
+	document.getElementById('NotificationNumberNotifications').innerText = parseInt(document.getElementById('NotificationNumber').innerText) + ' ' + document.getElementById('NotificationNumberNotifications').innerText.split(' ', 2)[1];
+	document.getElementById('NotificationDropDown').appendChild(Notification);
+	var Divider = document.createElement('div');
+	Divider.classList = 'dropdown-divider';
+	document.getElementById('NotificationDropDown').appendChild(Divider);
 }
 
 /**
@@ -57,30 +57,30 @@ function AddNotification(Notification)
  */
 function CreateNotification(ID, Link, FontAwesomeIcon, Message)
 {
-    var Notification = document.createElement('a');
-    Notification.href = Link;
-    Notification.id = 'Notification-' + ID;
-    Notification.classList = 'dropdown-item';
-    Notification.innerHTML = '<i class="fas ' + FontAwesomeIcon + ' mr-2"></i>' + Message;
-    return Notification;
+	var Notification = document.createElement('a');
+	Notification.href = Link;
+	Notification.id = 'Notification-' + ID;
+	Notification.classList = 'dropdown-item';
+	Notification.innerHTML = '<i class="fas ' + FontAwesomeIcon + ' mr-2"></i>' + Message;
+	return Notification;
 }
 
 function ReloadView()
 {
-    var ElementsInContentBody = ContentBody.children;
-    for (var i = 0; i < ElementsInContentBody.length; i++)
-        ElementsInContentBody[i].style.display = 'none';
+	var ElementsInContentBody = ContentBody.children;
+	for (var i = 0; i < ElementsInContentBody.length; i++)
+		ElementsInContentBody[i].style.display = 'none';
 
-    for (var i = 0; i < HideFunctions.length; i++)
-        HideFunctions[i]();
+	for (var i = 0; i < HideFunctions.length; i++)
+		HideFunctions[i]();
 
-    const ElementsToShow = document.getElementsByClassName(location.hash.substring(1));
+	const ElementsToShow = document.getElementsByClassName(location.hash.substring(1));
 
-    for (var i = 0; i < ElementsToShow.length; i++)
-        ElementsToShow[i].style.display = 'block';
+	for (var i = 0; i < ElementsToShow.length; i++)
+		ElementsToShow[i].style.display = 'block';
 
-    for (var i = 0; i < ShowFunctions.length; i++)
-        ShowFunctions[i]();
+	for (var i = 0; i < ShowFunctions.length; i++)
+		ShowFunctions[i]();
 }
 
 /**
@@ -91,46 +91,83 @@ function ReloadView()
  */
 function GetAuthors(AuthorIDs, ElementToPutIn, GetHTMLWithLinks = false)
 {
-    console.log(AuthorIDs);
+	console.log(AuthorIDs);
 
-    for (var i = 0; i < AuthorIDs.length; i++)
-    {
-        $.post(AuthorAPIV2, { type : 'GetAuthor', Identifier : AuthorIDs[i]}, function(data)
-        {
-            console.log(data);
-            if (GetHTMLWithLinks == false)
-                ElementToPutIn.innerText += data['data']['Name'] + ' - ';
-            else
-                ElementToPutIn.innerHTML += '<a href="#' + data['data']['Name'] + '">' + data['data']['Name'] + '</a>';
-        });
-    }
+	for (var i = 0; i < AuthorIDs.length; i++)
+	{
+		$.post(AuthorAPIV2, { type : 'GetAuthor', Identifier : AuthorIDs[i]}, function(data)
+		{
+			console.log(data);
+			if (GetHTMLWithLinks == false)
+				ElementToPutIn.innerText += data['data']['Name'] + ' - ';
+			else
+				ElementToPutIn.innerHTML += '<a href="#' + data['data']['Name'] + '">' + data['data']['Name'] + '</a>';
+		});
+	}
 }
 
 var BorrowBookListNumber = 1;
 function BorrowBookFindBook()
 {
-    if (BorrowBookIdentifier.value.length < 3)
-        return
-    
-    $.post(BookAPIV2, { 'type' : 'GetBook', 'Identifier' : BorrowBookIdentifier.value }, function(data)
-    {
-        var table = document.getElementById('BorrowingTable').children[1];
-        var row = table.insertRow(table.rows.length);
-        row.insertCell(0).innerText = BorrowBookListNumber++;
-        row.insertCell(1).innerText = data['data']['Identifier'];
-        row.insertCell(2).innerText = data['data']['Title'];
-        GetAuthors(JSON.parse(data['data']['AuthorIDs']), row.insertCell(3), false);
-        row.insertCell(4).innerText = 'Cancel';
+	if (BorrowBookIdentifier.value.length < 3)
+		return
+	
+	$.post(BookAPIV2, { 'type' : 'GetBook', 'Identifier' : BorrowBookIdentifier.value }, function(data)
+	{
+		var table = document.getElementById('BorrowingTable').children[1];
+		var row = table.insertRow(table.rows.length);
+		row.insertCell(0).innerText = BorrowBookListNumber++;
+		row.insertCell(1).innerText = data['data']['Identifier'];
+		row.insertCell(2).innerText = data['data']['Title'];
+		GetAuthors(JSON.parse(data['data']['AuthorIDs']), row.insertCell(3), false);
+		row.insertCell(4).innerText = 'Cancel';
 
-        BorrowBookIdentifier.value = '';
-    });
+		BorrowBookIdentifier.value = '';
+	});
 }
 
 function EmptyBorrowBook()
 {
-    $('#BorrowingTable tbody tr').remove();
-    BorrowBookIdentifier.value = '';
+	$('#BorrowingTable tbody tr').remove();
+	BorrowBookIdentifier.value = '';
 
+}
+
+function LogOut()
+{
+	$.post(UserAPIV2, { type : "LogOut" }, function (data) { location.reload(); });
+}
+
+function SearchBooks()
+{
+	var SearchTag = document.getElementById('SearchBookInput').value;
+
+	$.post(BookAPIV2, { type : 'SearchBook', SearchTag : SearchTag }, function (data)
+	{
+		if (!data['response'])
+		{
+			console.log('Could not perform the Search');
+			return;
+		}
+
+		var table = document.getElementById('SearchResultTable').children[1];
+		table.innerHTML = '';
+		for (var i = 0; i < data['data'].length; i++)
+		{
+			var row = table.insertRow(table.rows.length);
+			row.insertCell(0).innerText = i + 1;
+			row.insertCell(1).innerText = data['data'][i]['Identifier'];
+			row.insertCell(2).innerText = data['data'][i]['Title'];
+			GetAuthors(JSON.parse(data['data'][i]['AuthorIDs']), row.insertCell(3), false);
+			row.insertCell(4).innerText = data['data'][i]['Dewey'];
+			row.insertCell(5).innerText = data['data'][i]['ISBN'];
+			row.insertCell(6).innerText = data['data'][i]['Quantity'] - data['data'][i]['QuantityBorrowed'];
+		}
+
+		location.hash = '#Search';
+	});
+
+	return false;
 }
 
 var BorrowBookIdentifier;
@@ -138,14 +175,15 @@ var BorrowBookFindBookBtn;
 
 $(function()
 {
-    AddCard(CreateCard('BorrowBookCard', 'BorrowBook', 'Borrow Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" id="BorrowBookIdentifier" placeholder="Book Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" id="BorrowBookFindBookBtn">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div> <br /><div class="row"><div class="col-9"> <input type="text" class="form-control" placeholder="User Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark">Find User</button></div></div> <br /><div class="row"><div class="col-12"> <input type="text" class="form-control" placeholder="User Name" readonly disabled></div></div>', '<button type="button" class="btn btn-block btn-dark" id="BorrowBookBtn" style="width: 100%">Charge</button>'));
-    AddCard(CreateCard('ReturnBookCard', 'ReturnBook', 'Return Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" placeholder="Book Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%">Return Books</button>'));
+	AddCard(CreateCard('BorrowBookCard', 'BorrowBook', 'Borrow Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" id="BorrowBookIdentifier" placeholder="Book Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" id="BorrowBookFindBookBtn">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div> <br /><div class="row"><div class="col-9"> <input type="text" class="form-control" placeholder="User Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark">Find User</button></div></div> <br /><div class="row"><div class="col-12"> <input type="text" class="form-control" placeholder="User Name" readonly disabled></div></div>', '<button type="button" class="btn btn-block btn-dark" id="BorrowBookBtn" style="width: 100%">Charge</button>'));
+	AddCard(CreateCard('ReturnBookCard', 'ReturnBook', 'Return Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" placeholder="Book Identifier"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%">Return Books</button>'));
+	AddCard(CreateCard('SearchResultsCard', 'Search', 'Search Results', 'dark', '<div class="col-12 table-responsive"><table id="SearchResultTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Dewey</th><th>ISBN</th><th>Quantity Available</th></tr></thead><tbody></tbody></table></div>', ''))
+	
+	BorrowBookIdentifier = document.getElementById('BorrowBookIdentifier');
+	BorrowBookFindBookBtn = document.getElementById('BorrowBookFindBookBtn');
 
-    BorrowBookIdentifier = document.getElementById('BorrowBookIdentifier');
-    BorrowBookFindBookBtn = document.getElementById('BorrowBookFindBookBtn');
+	window.addEventListener("hashchange", ReloadView, false);
+	ReloadView();
 
-    window.addEventListener("hashchange", ReloadView, false);
-    ReloadView();
-
-    BorrowBookFindBookBtn.onclick = BorrowBookFindBook;
+	BorrowBookFindBookBtn.onclick = BorrowBookFindBook;
 });

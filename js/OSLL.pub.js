@@ -103,11 +103,12 @@ function LogIn()
 	});
 }
 
+var SkipSearch = 0;
 function SearchBooks()
 {
 	var SearchTag = document.getElementById('SearchBookInput').value;
 
-	$.post(BookAPIV2, { type : 'SearchBook', SearchTag : SearchTag }, function (data)
+	$.post(BookAPIV2, { type : 'SearchBook', SearchTag : SearchTag, Skip : SkipSearch }, function (data)
 	{
 		if (!data['response'])
 		{
@@ -120,7 +121,7 @@ function SearchBooks()
 		for (var i = 0; i < data['data'].length; i++)
 		{
 			var row = table.insertRow(table.rows.length);
-			row.insertCell(0).innerText = i + 1;
+			row.insertCell(0).innerText = SkipSearch + i + 1;
 			row.insertCell(1).innerText = data['data'][i]['Identifier'];
 			row.insertCell(2).innerText = data['data'][i]['Title'];
 			GetAuthors(JSON.parse(data['data'][i]['AuthorIDs']), row.insertCell(3), false);
@@ -138,7 +139,7 @@ function SearchBooks()
 $(function()
 {
 	AddCard(CreateCard('LogInCard', 'Login', 'Log In', 'dark', '<div class="row"><div class="col-12"><input type="text" class="form-control" id="UsernameInput" placeholder="Username"></div></div><br /><div class="row"><div class="col-12"><input type="password" class="form-control" id="PasswordInput" placeholder="Password"></div></div>', '<button type="button" class="btn btn-block btn-dark" onclick="LogIn();" style="width: 100%">Login</button>'));
-	AddCard(CreateCard('SearchResultsCard', 'Search', 'Search Results', 'dark', '<div class="col-12 table-responsive"><table id="SearchResultTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Dewey</th><th>ISBN</th><th>Quantity Available</th></tr></thead><tbody></tbody></table></div>', ''));
+	AddCard(CreateCard('SearchResultsCard', 'Search', 'Search Results', 'dark', '<div class="col-12 table-responsive"><table id="SearchResultTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Dewey</th><th>ISBN</th><th>Quantity Available</th></tr></thead><tbody></tbody></table></div>', '<div class="row"><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="if (SkipSearch >= 20) { SkipSearch = SkipSearch - 20; SearchBooks(); }">Previous Page</button></div><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="SkipSearch = SkipSearch + 20; SearchBooks();">Next Page</button></div></div>'));
 	window.addEventListener("hashchange", ReloadView, false);
 	ReloadView();
 });

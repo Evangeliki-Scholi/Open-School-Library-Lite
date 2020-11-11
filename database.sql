@@ -44,6 +44,7 @@ DROP TABLE IF EXISTS `authors`;
 CREATE TABLE `authors` (
     `ID` int NOT NULL,
     `Name` text COLLATE utf8_bin NOT NULL,
+    `PictureURL` text COLLATE utf8_bin,
     `Description` text COLLATE utf8_bin NOT NULL,
     `Metadata` text COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;

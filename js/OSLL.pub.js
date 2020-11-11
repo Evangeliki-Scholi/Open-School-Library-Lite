@@ -3,7 +3,7 @@ const BookAPIV2 = 'API/V2/Book.php';
 const AuthorAPIV2 = 'API/V2/Author.php';
 
 var HideFunctions = [];
-var ShowFunctions = [];
+var ShowFunctions = [ShowAuthor];
 
 /**
  * Add a Card created by the CreateCard function to main body;
@@ -66,7 +66,7 @@ function GetAuthors(AuthorIDs, ElementToPutIn, GetHTMLWithLinks = false)
 			if (GetHTMLWithLinks == false)
 				ElementToPutIn.innerText += data['data']['Name'] + ' - ';
 			else
-				ElementToPutIn.innerHTML += '<a href="#' + data['data']['Name'] + '">' + data['data']['Name'] + '</a>';
+				ElementToPutIn.innerHTML += '<a href="#Author" onclick="AuthorID=' + data['data']['ID'] + '">' + data['data']['Name'] + '</a>';
 		});
 	}
 }
@@ -124,7 +124,7 @@ function SearchBooks()
 			row.insertCell(0).innerText = SkipSearch + i + 1;
 			row.insertCell(1).innerText = data['data'][i]['Identifier'];
 			row.insertCell(2).innerText = data['data'][i]['Title'];
-			GetAuthors(JSON.parse(data['data'][i]['AuthorIDs']), row.insertCell(3), false);
+			GetAuthors(JSON.parse(data['data'][i]['AuthorIDs']), row.insertCell(3), true);
 			row.insertCell(4).innerText = data['data'][i]['Dewey'];
 			row.insertCell(5).innerText = data['data'][i]['ISBN'];
 			row.insertCell(6).innerText = data['data'][i]['Quantity'] - data['data'][i]['QuantityBorrowed'];
@@ -136,10 +136,35 @@ function SearchBooks()
 	return false;
 }
 
+var AuthorID = -1;
+function ShowAuthor()
+{
+	if (location.hash != '#Author')
+		return;
+
+	if (AuthorID == -1)
+		location.hash = '';
+
+	$.post(AuthorAPIV2, { type : 'GetAuthor', Identifier : AuthorID }, function(data)
+	{
+		document.getElementById('AuthorName').innerText = data['data']['Name'];
+		if (data['data']['PictureURL'] != null)
+		{
+			document.getElementById('AuthorPictureImg').style.display = 'block';
+			document.getElementById('AuthorPictureImg').src = data['data']['PictureURL'];
+		}
+		else
+			document.getElementById('AuthorPictureImg').style.display = 'none';
+			document.getElementById('AuthorDescription').innerText = (data['data']['Description'] != '') ? data['data']['Description'] : 'No Author Description';
+	});
+}
+
 $(function()
 {
-	AddCard(CreateCard('LogInCard', 'Login', 'Log In', 'dark', '<div class="row"><div class="col-12"><input type="text" class="form-control" id="UsernameInput" placeholder="Username"></div></div><br /><div class="row"><div class="col-12"><input type="password" class="form-control" id="PasswordInput" placeholder="Password"></div></div>', '<button type="button" class="btn btn-block btn-dark" onclick="LogIn();" style="width: 100%">Login</button>'));
+	AddCard(CreateCard('LogInCard', 'Login', 'Log In', 'dark', '<div class="row"><div class="col-12"><input type="text" class="form-control" id="UsernameInput" placeholder="Username" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');"></div></div><br /><div class="row"><div class="col-12"><input type="password" class="form-control" id="PasswordInput" placeholder="Password" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');"></div></div>', '<button type="button" class="btn btn-block btn-dark" onclick="LogIn();" style="width: 100%">Login</button>'));
 	AddCard(CreateCard('SearchResultsCard', 'Search', 'Search Results', 'dark', '<div class="col-12 table-responsive"><table id="SearchResultTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Dewey</th><th>ISBN</th><th>Quantity Available</th></tr></thead><tbody></tbody></table></div>', '<div class="row"><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="if (SkipSearch >= 20) { SkipSearch = SkipSearch - 20; SearchBooks(); }">Previous Page</button></div><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="SkipSearch = SkipSearch + 20; SearchBooks();">Next Page</button></div></div>'));
+	AddCard(CreateCard('AuthorCard', 'Author', 'Author\'s Page', 'dark', '<div class="row"><div class="col-12"><h1 id="AuthorName" style="text-align: center;"></h1></div></div><div class="row"><div class="col-12"><img src="" id="AuthorPictureImg" width="30%" style="margin-left: auto; margin-right: auto;"></div></div><br /><div class="row"><div class="col-12"><p id="AuthorDescription" class="text-justify"></p></div></div>', ''));
+
 	window.addEventListener("hashchange", ReloadView, false);
 	ReloadView();
 });

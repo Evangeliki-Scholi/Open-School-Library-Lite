@@ -59,7 +59,7 @@ function GetAuthor($PermissionLevels, $LogInLevel, $DatabaseConnection)
 
 	$Identifier = $_POST['Identifier'];
 
-	$query = 'SELECT `ID`, `Name`, `Description`, `Metadata` FROM `authors` WHERE `ID` = ?;';
+	$query = 'SELECT `ID`, `Name`, `PictureURL`, `Description`, `Metadata` FROM `authors` WHERE `ID` = ?;';
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in AuthorV2::'.__FUNCTION__, 'errorCode' => 3101);

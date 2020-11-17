@@ -29,7 +29,9 @@ function Footer()
 			<!-- [/Bootstrap] -->
 
 			<!-- [OSLL] -->
-			<script src="js/OSLL.pub.min.js"></script>
+			<script src="js/OSLL.card.js"></script>
+			<script src="js/OSLL.pub.js"></script>
+			<script src="js/OSLL.login.js"></script>
 			<!-- [/OSLL] -->
 
 			<!-- [/Footer] -->

@@ -49,6 +49,16 @@ function MainPage($LoggedIn = false)
 {
 	echo "\t\t\t".'<!-- [Main Page] -->
 			<div class="content-wrapper">
+
+				<!-- [New Notification Panel] -->
+				<div aria-live="polite" aria-atomic="true" style="position: relative; height: 0px; z-index: 99 !important;">
+					<!-- Position it -->
+					<div style="position: absolute; top: 0; right: 0;" id="InstantNotification">
+						<br />
+					</div>
+				</div>
+				<!-- [/New Notification Panel] -->
+
 				<!-- [Content Body] -->
 				<section class="content">
 					<div class="container-fluid">

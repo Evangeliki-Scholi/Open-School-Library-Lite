@@ -37,6 +37,8 @@ function Footer()
 			<!-- [/Admin LTE] -->
 	
 			<!-- [OSLL] -->
+			<script src="js/OSLL.card.js"></script>
+			<script src="js/OSLL.pub.js"></script>
 			<script src="js/OSLL.js"></script>
 			<!-- [/OSLL] -->
 

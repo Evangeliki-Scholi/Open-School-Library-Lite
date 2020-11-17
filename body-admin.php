@@ -70,7 +70,7 @@ echo '
 ';
 }
 
-function SideNavBar($LoggedIn = false, $Name = 'User', $EmailHash = '00000000000000000000000000000000', $Lever = 2)
+function SideNavBar($LoggedIn = false, $Name = 'User', $Title = 'Open School Library Lite', $EmailHash = '00000000000000000000000000000000', $Lever = 2)
 {
 	if (!$LoggedIn)
 		return;
@@ -79,7 +79,7 @@ function SideNavBar($LoggedIn = false, $Name = 'User', $EmailHash = '00000000000
 			<aside class="main-sidebar sidebar-dark-primary elevation-4">
 				<!-- [OSLL Title] -->
 				<a href="index.html" class="brand-link">
-					<span class="brand-text font-weight-light">Open School Library Lite</span>
+					<span class="brand-text font-weight-light">'.$Title.'</span>
 				</a>
 				<!-- [/OSSL Title] -->
 
@@ -106,7 +106,7 @@ function SideNavBar($LoggedIn = false, $Name = 'User', $EmailHash = '00000000000
 								</a>
 								<ul class="nav nav-treeview">
 									<li class="nav-item">
-										<a href="#BorrowBook" class="nav-link">
+										<a href="#ChargeBook" class="nav-link">
 											<i class="fas fa-arrow-circle-up"></i>
 											<p>Charge Book</p>
 										</a>
@@ -192,16 +192,26 @@ function SideNavBar($LoggedIn = false, $Name = 'User', $EmailHash = '00000000000
 ';
 }
 
-function MainPage($LoggedIn = false)
+function MainPage($LoggedIn = false, $Title = 'Open School Library Lite')
 {
 	echo "\t\t\t".'<!-- [Main Page] -->
 			<div class="content-wrapper">
+
+				<!-- [New Notification Panel] -->
+				<div aria-live="polite" aria-atomic="true" style="position: relative; height: 0px; z-index: 99 !important;">
+					<!-- Position it -->
+					<div style="position: absolute; top: 0; right: 0;" id="InstantNotification">
+						<br />
+					</div>
+				</div>
+				<!-- [/New Notification Panel] -->
+
 				<!-- [Content Header] -->
 				<section class="content-header">
 					<div class="container-fluid">
 						<div class="row mb-2">
 							<div class="col-sm-6">
-								<h2>Open School Library Lite Admin Panel</h2>
+								<h2>'.$Title.' Admin Panel</h2>
 							</div>
 							<div class="col-sm-6">
 								<ol class="breadcrumb float-sm-right">

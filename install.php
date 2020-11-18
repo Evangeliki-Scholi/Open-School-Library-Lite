@@ -83,6 +83,7 @@ function SetUpConfFile()
 
 $Title = \''.$_POST['Title'].'\';
 $Language = \''.$_POST['Language'].'\';
+$Theme = \'Lumid\';
 
 ?>');
 

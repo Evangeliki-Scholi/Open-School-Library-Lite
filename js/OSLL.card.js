@@ -46,7 +46,7 @@ function AddNotification(Notification)
 	}
 	if (Notification.IsInstant)
 	{
-		var Not = $.parseHTML('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false" id="Notification-' + Notification.id + '-Instant"><div class="toast-header"><i class="fas fa-' + Notification.FontAwesomeIcon + '"></i><strong class="mr-auto">Notification.Type</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onclick="$(\'#Notification-' + Notification.id + '-Instant\').remove();"><span aria-hidden="true">&times;</span></button></div><div class="toast-body">' + Notification.Message + '</div></div>');
+		var Not = $.parseHTML('<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false" id="Notification-' + Notification.id + '-Instant"><div class="toast-header"><i class="fas fa-' + Notification.FontAwesomeIcon + '"></i><strong class="mr-auto">' + Notification.Type + '</strong><button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onclick="$(\'#Notification-' + Notification.id + '-Instant\').remove();"><span aria-hidden="true">&times;</span></button></div><div class="toast-body">' + Notification.Message + '</div></div>');
 		$('#InstantNotification').append(Not);
 		$('.toast').toast('show');
 	}

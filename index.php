@@ -20,42 +20,20 @@ else
 	session_destroy();
 }
 
+$LoggedIn = $LogInLevel != 3;
+
 require CONF_FILE;
 
-if (0 <= $LogInLevel && $LogInLevel <= 1)
-{
-	require_once 'header-admin.php';
-	require_once 'body-admin.php';
-	require_once 'footer-admin.php';
+require_once 'Themes/'.$Theme.'/Head.php';
+require_once 'Themes/'.$Theme.'/Body.php';
+require_once 'Themes/'.$Theme.'/Footer.php';
 
-	StartHTML();
-	HEAD($Title);
-	StartBODY();
-
-	TopNavBar(true, 0);
-	SideNavBar(true, $_SESSION['Name'], $Title, md5(strtolower(trim($_SESSION['Email']))), 0);
-	MainPage(true, $Title);
-	Footer();
-
-	EndBODY();
-	EndHTML();
-}
-else
-{
-	require_once 'header.php';
-	require_once 'body.php';
-	require_once 'footer.php';
-
-	StartHTML();
-	HEAD($Title);
-	StartBODY();
-
-	TopNavBar();
-	MainPage();
-	Footer();
-	
-	EndBODY();
-	EndHTML();
-}
+StartHTML($Title);
+Head($Title, $LoggedIn, $LogInLevel);
+StartBody($Title, $LoggedIn, $LogInLevel, ($LoggedIn) ? $_SESSION['Name'] : '', ($LoggedIn) ? $_SESSION['Email'] : '00000000000000000000000000000000');
+MainPageLoad($Title, $LoggedIn, $LogInLevel, ($LoggedIn) ? $_SESSION['Name'] : '', ($LoggedIn) ? $_SESSION['Email'] : '00000000000000000000000000000000');
+Footer($Title, $LoggedIn, $LogInLevel, ($LoggedIn) ? $_SESSION['Name'] : '');
+EndBody($Title, $LoggedIn, $LogInLevel, ($LoggedIn) ? $_SESSION['Name'] : '');
+EndHTML($Title);
 
 ?>

@@ -37,10 +37,15 @@ function GetAuthors(AuthorIDs, ElementToPutIn, GetHTMLWithLinks = false)
 	{
 		$.post(AuthorAPIV2, { type : 'GetAuthor', Identifier : AuthorIDs[i]}, function(data)
 		{
-			if (GetHTMLWithLinks == false)
-				ElementToPutIn.innerText += data['data']['Name'] + ' - ';
+			if (ElementToPutIn)
+			{
+				if (GetHTMLWithLinks == false)
+					ElementToPutIn.innerText += data['data']['Name'] + ' - ';
+				else
+					ElementToPutIn.innerHTML += '<a href="#Author" onclick="AuthorID=' + data['data']['ID'] + '">' + data['data']['Name'] + '</a>';
+			}
 			else
-				ElementToPutIn.innerHTML += '<a href="#Author" onclick="AuthorID=' + data['data']['ID'] + '">' + data['data']['Name'] + '</a>';
+				return data['data'];
 		});
 	}
 }

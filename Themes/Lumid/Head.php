@@ -23,6 +23,18 @@ function Head($Title = 'Open School Library Lite', $LoggedIn = false, $Level = 3
         <!-- [Admin LTE] -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.5/css/adminlte.min.css">
         <!-- [/Admin LTE] -->
+
+        <style>
+            .custom-form-control {
+                width: 100%;
+                padding: 12px 20px;
+                margin: 8px 0;
+                display: inline-block;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+        </style>
     </html>
 ';
 }

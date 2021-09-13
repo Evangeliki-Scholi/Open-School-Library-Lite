@@ -81,7 +81,28 @@ function RemoveAuthor($PermissionLevels, $LogInLevel, $DatabaseConnection)
 
 function SearchAuthor($PermissionLevels, $LogInLevel, $DatabaseConnection)
 {
-	return array('response' => false, 'error' => 'SearchAuthor is not yet activated');
+	if (!isset($_POST['SearchTag']) || $_POST['SearchTag'] == '' || strlen($_POST['SearchTag']) < 2)
+		return array('response' => false, 'error' => 'SearchTag is not provided', 'errorCode' => 3321);
+
+	$SearchTag = $_POST['SearchTag'].'%';
+	$Skip = (isset($_POST['Skip'])) ? $_POST['Skip'] : 0;
+	$Limit = (isset($_POST['Limit']) && $_POST['Limit'] <= 100) ? $_POST['Limit'] : 20;
+
+	$query = 'SELECT `ID`, `Name`, `PictureURL`, `Description`, `Metadata` FROM `authors` WHERE ( UPPER(`Name`) LIKE UPPER(?) OR `ID` = ?) ORDER BY `ID` LIMIT '.$Skip.', '.$Limit.';';
+	$statement = $DatabaseConnection->prepare($query);
+	if (!$statement)
+		return array('response' => false, 'error' => 'Could not prepare statement in AuthorV2::'.__FUNCTION__, 'errorCode' => 3101);
+	$statement->bind_param('ss', $SearchTag, $_POST['SearchTag']);
+	if (!$statement->execute())
+		return array('response' => false, 'error' => 'Could not execute statement in AuthorV2::'.__FUNCTION__, 'errorCode' => 3102);
+
+	$result = $statement->get_result();
+	$response = array('response' => true, 'data' => array());
+	
+	while ($row = $result->fetch_assoc())
+		$response['data'][] = $row;
+
+	return $response;
 }
 
 

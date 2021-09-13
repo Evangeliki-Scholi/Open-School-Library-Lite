@@ -129,7 +129,7 @@ async function EditBookFindBook() {
 					row.insertCell(0).innerText = table.rows.length;
 					row.insertCell(1).innerText = authordata['ID'];
 					row.insertCell(2).innerHTML = '<a href="#Author" onclick="AuthorID=' + authordata['ID'] + '">' + authordata['Name'] + '</a>';
-					row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-danger" onclick="RemoveAuthor(' + authordata['ID'] + ');">Remove</button>';
+					row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-danger" onclick="EditBookRemoveAuthor(' + authordata['ID'] + ');">Remove</button>';
 				});
 			}
 		}
@@ -137,7 +137,7 @@ async function EditBookFindBook() {
 	});
 }
 
-function UpdateAuthors() {
+function EditBookUpdateAuthors() {
 	let authorsAlreadyAdded = [];
 	try
 	{
@@ -158,12 +158,12 @@ function UpdateAuthors() {
 			row.insertCell(0).innerText = table.rows.length;
 			row.insertCell(1).innerText = data['ID'];
 			row.insertCell(2).innerHTML = '<a href="#Author" onclick="AuthorID=' + data['ID'] + '">' + data['Name'] + '</a>';
-			row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-danger" onclick="RemoveAuthor(' + data['ID'] + ');">Remove</button>';
+			row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-danger" onclick="EditBookRemoveAuthor(' + data['ID'] + ');">Remove</button>';
 		});
 	}
 }
 
-function AddAuthor(authorID) {
+function EditBookAddAuthor(authorID) {
 	let authorsAlreadyAdded = [];
 	try
 	{
@@ -184,10 +184,10 @@ function AddAuthor(authorID) {
 
 	$('#EditBookAddAuthor').val('');
 
-	UpdateAuthors();
+	EditBookUpdateAuthors();
 }
 
-function RemoveAuthor(authorID) {
+function EditBookRemoveAuthor(authorID) {
 	let authorsAlreadyAdded = [];
 	try
 	{
@@ -210,7 +210,7 @@ function RemoveAuthor(authorID) {
 	table = table.children[1];
 	table.innerHTML = '';
 
-	UpdateAuthors();
+	EditBookUpdateAuthors();
 }
 
 async function EditBookFindAuthor() {
@@ -240,7 +240,7 @@ async function EditBookFindAuthor() {
 				row.insertCell(0).innerText = table.rows.length;
 				row.insertCell(1).innerText = data[i]['ID'];
 				row.insertCell(2).innerHTML = '<a href="#Author" onclick="AuthorID=' + data[i]['ID'] + '">' + data[i]['Name'] + '</a>';
-				row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-primary" onclick="AddAuthor(\'' + data[i]['ID'] + '\');">Add</button>';
+				row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-primary" onclick="EditBookAddAuthor(\'' + data[i]['ID'] + '\');">Add</button>';
 			}
 		}
 	});
@@ -253,7 +253,7 @@ async function SubmitChanges() {
 	$.post(BookAPIV2, { 'type' : 'EditBook', 'Identifier' : $('#EditBookId').val(), 'Title': $('#EditBookTitle').val(), 'AuthorIDs' : $('#EditBookAuthors').val(), 'Dewey' : $('#EditBookDewey').val(), 'ISBN' : $('#EditBookISBN').val(), 'Quantity' : $('#EditBookQuantity').val() }, function(data) {
 		console.log(data);
 		if (data['response'] == true) {
-			$('#EditBookBookIdentifier').val('');
+			$('#EditBookIdentifier').val('');
 			$('#EditBookId').val('');
 			$('#EditBookTitle').val('');
 			$('#EditBookAuthors').val('');
@@ -274,6 +274,144 @@ async function SubmitChanges() {
 
 /*******************************************************************************************************************************/
 
+
+function NewBookUpdateAuthors() {
+	let authorsAlreadyAdded = [];
+	try
+	{
+		authorsAlreadyAdded = JSON.parse($('#NewBookAuthors').val());
+	}
+	catch { }
+
+	let table = document.getElementById('NewBookAuthorsTable');
+	table = table.children[1];
+	table.innerHTML = '';
+
+	for (let i = 0; i < authorsAlreadyAdded.length; i++)
+	{
+		$.post(AuthorAPIV2, { 'type': 'GetAuthor', Identifier : authorsAlreadyAdded[i] }, function(data) {
+			data = data['data'];
+
+			let row = table.insertRow(table.rows.length);
+			row.insertCell(0).innerText = table.rows.length;
+			row.insertCell(1).innerText = data['ID'];
+			row.insertCell(2).innerHTML = '<a href="#Author" onclick="AuthorID=' + data['ID'] + '">' + data['Name'] + '</a>';
+			row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-danger" onclick="NewBookRemoveAuthor(' + data['ID'] + ');">Remove</button>';
+		});
+	}
+}
+
+function NewBookAddAuthor(authorID) {
+	let authorsAlreadyAdded = [];
+	try
+	{
+		authorsAlreadyAdded = JSON.parse($('#NewBookAuthors').val());
+	}
+	catch { }
+
+	if (authorsAlreadyAdded.includes(authorID))
+		return;
+	
+	authorsAlreadyAdded.push(parseInt(authorID));
+
+	$('#NewBookAuthors').val(JSON.stringify(authorsAlreadyAdded));
+
+	let table = document.getElementById('NewBookAuthorsResultsTable');
+	table = table.children[1];
+	table.innerHTML = '';
+
+	$('#NewBookAddAuthor').val('');
+
+	NewBookUpdateAuthors();
+}
+
+function NewBookRemoveAuthor(authorID) {
+	let authorsAlreadyAdded = [];
+	try
+	{
+		authorsAlreadyAdded = JSON.parse($('#NewBookAuthors').val());
+	}
+	catch { }
+
+	if (!authorsAlreadyAdded.includes(authorID))
+		return;
+
+	for(let i = 0; i < authorsAlreadyAdded.length; i++)
+	{ 
+		if (authorsAlreadyAdded[i] == parseInt(authorID))
+			authorsAlreadyAdded.splice(i, 1); 
+	}
+
+	$('#NewBookAuthors').val(JSON.stringify(authorsAlreadyAdded));
+
+	let table = document.getElementById('NewBookAuthorsResultsTable');
+	table = table.children[1];
+	table.innerHTML = '';
+
+	NewBookUpdateAuthors();
+}
+
+async function NewBookFindAuthor() {
+	if ($('#NewBookAddAuthor').val().length < 3)
+		return;
+
+	$.post(AuthorAPIV2, { 'type': 'SearchAuthor', 'SearchTag' : $('#NewBookAddAuthor').val() }, function(data)
+	{
+		data = data['data'];
+		
+		let table = document.getElementById('NewBookAuthorsResultsTable');
+		table = table.children[1];
+		table.innerHTML = '';
+
+		let authorsAlreadyAdded = [];
+		try
+		{
+			authorsAlreadyAdded = JSON.parse($('#NewBookAuthors').val());
+		}
+		catch { }
+
+		for (let i = 0; i < data.length; i++)
+		{
+			if (!authorsAlreadyAdded.includes(data[i]['ID']))
+			{
+				let row = table.insertRow(table.rows.length);
+				row.insertCell(0).innerText = table.rows.length;
+				row.insertCell(1).innerText = data[i]['ID'];
+				row.insertCell(2).innerHTML = '<a href="#Author" onclick="AuthorID=' + data[i]['ID'] + '">' + data[i]['Name'] + '</a>';
+				row.insertCell(3).innerHTML = '<buton class="btn btn-block btn-primary" onclick="NewBookAddAuthor(\'' + data[i]['ID'] + '\');">Add</button>';
+			}
+		}
+	});
+}
+
+async function AddBook() {
+	if (!$('#NewBookIdentifier').val())
+		return;
+
+	$.post(BookAPIV2, { 'type' : 'AddBook', 'Identifier' : $('#NewBookIdentifier').val(), 'Title': $('#NewBookTitle').val(), 'AuthorIDs' : $('#NewBookAuthors').val(), 'Dewey' : $('#NewBookDewey').val(), 'ISBN' : $('#NewBookISBN').val(), 'Quantity' : $('#NewBookQuantity').val() }, function(data) {
+		console.log(data);
+		if (data['response'] == true) {
+			$('#NewBookIdentifier').val('');
+			$('#NewBookTitle').val('');
+			$('#NewBookAuthors').val('');
+			$('#NewBookDewey').val('');
+			$('#NewBookISBN').val('');
+			$('#NewBookQuantity').val('');
+
+			let table = document.getElementById('NewBookAuthorsResultsTable');
+			table = table.children[1];
+			table.innerHTML = '';
+
+			table = document.getElementById('NewBookAuthorsTable');
+			table = table.children[1];
+			table.innerHTML = '';
+		}
+		else if (data['response'] == false && data.hasOwnProperty('error'))
+			AddNotification(CreateNotification('Error', '', 'exclamation', data['error'], 'Error', true, false));
+	});
+}
+
+/*******************************************************************************************************************************/
 
 var SkipCharges = 0;
 function ResetCharges()
@@ -328,6 +466,7 @@ $(function()
 {
 	AddCard(CreateCard('ChargeBookCard', 'ChargeBook', 'Charge Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" id="BorrowBookBookIdentifier" placeholder="Book Identifier" autocomplete="off"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" onclick="BorrowBookFindBook()">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div> <br /><div class="row"><div class="col-9"> <input type="text" class="form-control" id="BorrowBookUserIdentifier" placeholder="User Identifier" autocomplete="off"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" onclick="BorrowBookFindUser()">Find User</button></div></div> <br /><div class="row"><div class="col-12" hidden><input type="text" class="form-control" id="BorrowBookUserIdentifierLock" readonly disabled></div></div><div class="row"><div class="col-12"> <input type="text" class="form-control" id="BorrowBookUserName" placeholder="User Name" readonly disabled></div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%" onclick="ChargeBooks()">Charge</button>'));
 	AddCard(CreateCard('EditBookCard', 'EditBook', 'Edit Book', 'dark', '<div class="row"> <div class="col-9"> <input type="text" class="form-control" id="EditBookIdentifier" placeholder="Book Identifier" autocomplete="off"> </div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" onclick="EditBookFindBook()">Find Book</button> </div></div><br/><div class="row"> <div class="col-12"> <form> <label for="EditBookIdentifier">Identifier</label> <input type="text" class="custom-form-control" id="EditBookId" placeholder="Book Identifier" readonly disabled> <label for="EditBookTitle">Title</label> <input type="text" class="custom-form-control" id="EditBookTitle" placeholder="Enter Book Title"> <label for="EditBookAuthors">Authors</label> <input type="text" class="custom-form-control" id="EditBookAuthors" placeholder="Enter Book Authors" hidden> <table id="EditBookAuthorsTable" class="table table-bordered table-striped"> <thead> <tr> <th>#</th> <th>ID</th> <th>Name</th> <th>Action</th> </tr></thead> <tbody></tbody> </table> <label for="EditBookAddAuthor">Add Author</label> <div class="row"> <div class="col-9"> <input type="text" class="form-control" id="EditBookAddAuthor" placeholder="Add Author"> </div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" onclick="EditBookFindAuthor()">Search</button> </div></div><br/> <table id="EditBookAuthorsResultsTable" class="table table-bordered table-striped"> <thead> <tr> <th>#</th> <th>ID</th> <th>Name</th> <th>Action</th> </tr></thead> <tbody></tbody> </table> <br/> <label for="EditBookDewey">Dewey</label> <input type="text" class="custom-form-control" id="EditBookDewey" placeholder="Enter Book Dewey"> <label for="EditBookISBN">ISBN</label> <input type="text" class="custom-form-control" id="EditBookISBN" placeholder="Enter Book ISBN"> <label for="EditBookQuantity">Quantity</label> <input type="number" class="custom-form-control" id="EditBookQuantity" placeholder="Enter Book Quantity"> </form> </div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%" onclick="SubmitChanges();">Submit Changes</button>'));
+	AddCard(CreateCard('NewBookCard', 'NewBook', 'New Book', 'dark', '<div class="row"> <div class="col-12"> <form> <label for="NewBookIdentifier">Identifier</label> <input type="text" class="custom-form-control" id="NewBookIdentifier" placeholder="Book Identifier"> <label for="NewBookTitle">Title</label> <input type="text" class="custom-form-control" id="NewBookTitle" placeholder="Enter Book Title"> <label for="NewBookAuthors">Authors</label> <input type="text" class="custom-form-control" id="NewBookAuthors" placeholder="Enter Book Authors" hidden> <table id="NewBookAuthorsTable" class="table table-bordered table-striped"> <thead> <tr> <th>#</th> <th>ID</th> <th>Name</th> <th>Action</th> </tr></thead> <tbody></tbody> </table> <label for="NewBookAddAuthor">Add Author</label> <div class="row"> <div class="col-9"> <input type="text" class="form-control" id="NewBookAddAuthor" placeholder="Add Author"> </div><div class="col-3"> <button type="button" class="btn btn-block btn-dark" onclick="NewBookFindAuthor()">Search</button> </div></div><br/> <table id="NewBookAuthorsResultsTable" class="table table-bordered table-striped"> <thead> <tr> <th>#</th> <th>ID</th> <th>Name</th> <th>Action</th> </tr></thead> <tbody></tbody> </table> <br/> <label for="NewBookDewey">Dewey</label> <input type="text" class="custom-form-control" id="NewBookDewey" placeholder="Enter Book Dewey"> <label for="NewBookISBN">ISBN</label> <input type="text" class="custom-form-control" id="NewBookISBN" placeholder="Enter Book ISBN"> <label for="NewBookQuantity">Quantity</label> <input type="number" class="custom-form-control" id="NewBookQuantity" placeholder="Enter Book Quantity"> </form> </div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%" onclick="AddBook();">Add Book</button>'))
 	AddCard(CreateCard('ReturnBookCard', 'ReturnBook', 'Return Book', 'dark', '<div class="row"><div class="col-9"> <input type="text" class="form-control" placeholder="Book Identifier" autocomplete="off"></div><div class="col-3"> <button type="button" class="btn btn-block btn-dark">Find Book</button></div></div> <br /><div class="row"><div class="col-12 table-responsive"><table id="BorrowingTable" class="table table-bordered table-striped"><thead><tr><th>#</th><th>Identifier</th><th>Title</th><th>Author</th><th>Action</th></tr></thead><tbody></tbody></table></div></div>', '<button type="button" class="btn btn-block btn-dark" style="width: 100%">Return Books</button>'));
 	AddCard(CreateCard('ActiveChargesListCard','ActiveChargesList', 'Active Charges', 'dark', '<div class="col-12 table-responsive"><table id="ActiveChargesTable" class="table table-bordered table-striped"><thead><tr><th>Identifier</th><th>Title</th><th>User Name</th><th>Borrowing Date</th><th>Action</th></tr></thead><tbody></tbody></table></div>', '<div class="row"><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="if (SkipCharges >= 20) { SkipCharges = SkipCharges - 20; ShowCharges(); }">Previous Page</button></div><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="SkipCharges = SkipCharges + 20; ShowCharges();">Next Page</button></div></div>'));
 	AddCard(CreateCard('AllChargesListCard','AllChargesList', 'All Charges', 'dark', '<div class="col-12 table-responsive"><table id="AllChargesTable" class="table table-bordered table-striped"><thead><tr><th>Identifier</th><th>Title</th><th>User Name</th><th>Borrowing Date</th><th>Return Date</th><th>Active</th></tr></thead><tbody></tbody></table></div>', '<div class="row"><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="if (SkipCharges >= 20) { SkipCharges = SkipCharges - 20; ShowCharges(); }">Previous Page</button></div><div class="col-6"><button type="button" class="btn btn-block btn-primary" onclick="SkipCharges = SkipCharges + 20; ShowCharges();">Next Page</button></div></div>'));

@@ -238,7 +238,7 @@ function SearchUser($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in UserV2::'.__FUNCTION__, 'errorCode' => 3101);
-	$statement->bind_param('ssss', $SearchTag, $SearchTag, $SearchTag, $SearchIdentifier);
+	$statement->bind_param('ssss', $SearchTag, $SearchTag, $SearchTag, $_POST['SearchTag']);
 	if (!$statement->execute())
 		return array('response' => false, 'error' => 'Could not execute statement in UserV2::'.__FUNCTION__, 'errorCode' => 3102);
 

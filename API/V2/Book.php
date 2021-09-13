@@ -169,7 +169,7 @@ function SearchBook($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in BookV2::'.__FUNCTION__, 'errorCode' => 3101);
-	$statement->bind_param('ssss', $SearchTag, $SearchTag, $SearchTag, $SearchIdentifier);
+	$statement->bind_param('ssss', $SearchTag, $SearchTag, $SearchTag, $_POST['SearchTag']);
 	if (!$statement->execute())
 		return array('response' => false, 'error' => 'Could not execute statement in BookV2::'.__FUNCTION__, 'errorCode' => 3102);
 

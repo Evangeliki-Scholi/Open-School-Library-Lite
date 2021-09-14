@@ -24,6 +24,11 @@ function Head($Title = 'Open School Library Lite', $LoggedIn = false, $Level = 3
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/admin-lte/3.0.5/css/adminlte.min.css">
         <!-- [/Admin LTE] -->
 
+        <script>
+            const level = '.$Level.';
+            const maxLevel = 3; 
+        </script>
+
         <style>
             .custom-form-control {
                 width: 100%;

@@ -18,7 +18,7 @@ function TopNavBar($LoggedIn = false, $Level = 3)
 				<!-- [Top '.(($LoggedIn) ? 'Center' : 'Right').' NavBar] -->
 				<form class="form-inline ml-auto" onsubmit="return SearchBooks() && false" autocomplete="off">
 					<div class="input-group input-group-sm">
-					<input class="form-control form-control-navbar" id="SearchBookInput" type="search" placeholder="Search" aria-label="Search" style="color: #FFFFFF;">
+					<input class="form-control form-control-navbar" id="SearchBookInput" type="search" placeholder="Search" aria-label="Search" style="color: #FFFFFF;" onkeypress="javascript: if(event.keyCode == 13) SearchBooks();">
 					<div class="input-group-append">
 						<button class="btn btn-navbar" type="submit">
 						<i class="fas fa-search"></i>
@@ -215,7 +215,7 @@ function MainPageLoad($Title = 'Open School Library Lite', $LoggedIn = false, $L
 							<div class="col-sm-6">
 								<ol class="breadcrumb float-sm-right">
 									<li class="breadcrumb-item"><a href="#">Home</a></li>
-									<li class="breadcrumb-item active">Admin Panel</li>
+									'.((0 <= $Level && $Level <= 1) ? '<li class="breadcrumb-item active">Admin Panel</li>' : '').'
 								</ol>
 							</div>
 						</div>

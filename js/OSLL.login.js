@@ -1,11 +1,10 @@
 function LogIn()
 {
-	var Username = document.getElementById('UsernameInput').value;
-	var Password = document.getElementById('PasswordInput').value;
+	var Username = $('#UsernameInput').val();
+	var Password = $('#PasswordInput').val();
 
 	$.post(UserAPIV2, { type : 'GetAlgo', 'Username' : Username }, function (data)
 	{
-		console.log(data);
 		if (!data['response']) { console.log('Error getting Hashing Algorythm'); return; }
 
 		if (!data['data'].hasOwnProperty('Algo') || data['data']['Algo'] == null || data['data']['Algo'] == '') { console.log('User is not login capable.'); return; }
@@ -33,6 +32,6 @@ function LogIn()
 
 $(function()
 {
-    AddCard(CreateCard('LogInCard', 'Login', 'Log In', 'dark', '<div class="row"><div class="col-12"><input type="text" class="form-control" id="UsernameInput" placeholder="Username" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');"></div></div><br /><div class="row"><div class="col-12"><input type="password" class="form-control" id="PasswordInput" placeholder="Password" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');"></div></div>', '<button type="button" class="btn btn-block btn-dark" onclick="LogIn();" style="width: 100%">Login</button>'));
+    AddCard(CreateCard('LogInCard', 'Login', 'Log In', 'dark', '<div class="row"><div class="col-12"><input type="text" class="form-control" id="UsernameInput" placeholder="Username" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');" onkeypress="javascript: if(event.keyCode == 13) LogIn();"></div></div><br /><div class="row"><div class="col-12"><input type="password" class="form-control" id="PasswordInput" placeholder="Password" autocomplete="off" readonly onfocus="this.removeAttribute(\'readonly\');" onkeypress="javascript: if(event.keyCode == 13) LogIn();"></div></div>', '<button type="button" class="btn btn-block btn-dark" onclick="LogIn();" style="width: 100%">Login</button>'));
 	ReloadView();
 });

@@ -230,11 +230,11 @@ function SearchUser($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	if (!isset($_POST['SearchTag']) || $_POST['SearchTag'] == '' || strlen($_POST['SearchTag']) < 2)
 		return array('response' => false, 'error' => 'SearchTag is not provided', 'errorCode' => 3321);
 
-	$SearchTag = $_POST['SearchTag'].'%';
+	$SearchTag = '%'.$_POST['SearchTag'].'%';
 	$Skip = (isset($_POST['Skip'])) ? $_POST['Skip'] : 0;
 	$Limit = (isset($_POST['Limit']) && $_POST['Limit'] <= 100) ? $_POST['Limit'] : 20;
 
-	$query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Level`, `Grade`, `Metadata` WHERE ( UPPER(`Name`) LIKE UPPER(?) OR UPPER(`Username`) LIKE UPPER(?) OR UPPER(`Email`) LIKE UPPER(?) OR `Identifier` = ?) ORDER BY `Identifier` LIMIT '.$Skip.', '.$Limit.';';
+	$query = 'SELECT `Identifier`, `Name`, `Username`, `Email`, `Level`, `Grade`, `Metadata` FROM `users` WHERE ( UPPER(`Name`) LIKE UPPER(?) OR UPPER(`Username`) LIKE UPPER(?) OR UPPER(`Email`) LIKE UPPER(?) OR `Identifier` = ?) ORDER BY `Identifier` LIMIT '.$Skip.', '.$Limit.';';
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in UserV2::'.__FUNCTION__, 'errorCode' => 3101);

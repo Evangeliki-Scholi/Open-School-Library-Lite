@@ -53,7 +53,7 @@ function GetAuthors(AuthorIDs, ElementToPutIn, GetHTMLWithLinks = false)
 var SkipSearch = 0;
 function SearchBooks()
 {
-	var SearchTag = document.getElementById('SearchBookInput').value;
+	var SearchTag = $('#SearchBookInput').val();
 
 	$.post(BookAPIV2, { type : 'SearchBook', SearchTag : SearchTag, Skip : SkipSearch }, function (data)
 	{

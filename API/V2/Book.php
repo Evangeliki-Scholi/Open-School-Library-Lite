@@ -161,7 +161,7 @@ function SearchBook($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	if (!isset($_POST['SearchTag']) || $_POST['SearchTag'] == '' || strlen($_POST['SearchTag']) < 2)
 		return array('response' => false, 'error' => 'SearchTag is not provided', 'errorCode' => 3321);
 
-	$SearchTag = $_POST['SearchTag'].'%';
+	$SearchTag = '%'.$_POST['SearchTag'].'%';
 	$Skip = (isset($_POST['Skip'])) ? $_POST['Skip'] : 0;
 	$Limit = (isset($_POST['Limit']) && $_POST['Limit'] <= 100) ? $_POST['Limit'] : 20;
 

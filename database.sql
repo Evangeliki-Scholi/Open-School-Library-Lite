@@ -18,8 +18,8 @@ CREATE TABLE `books` (
 DROP TABLE IF EXISTS `charges`;
 CREATE TABLE IF NOT EXISTS `charges` (
     `ID` int NOT NULL,
-    `BookIdentifier` int NOT NULL,
-    `UserIdentifier` int NOT NULL,
+    `BookIdentifier` varchar(16384) CHARACTER SET utf8 NOT NULL DEFAULT '[]',
+    `UserIdentifier` text CHARACTER SET utf8 NOT NULL,
     `BorrowDate` date NOT NULL,
     `ReturnDate` date DEFAULT NULL,
     `Active` tinyint(1) DEFAULT 0,

@@ -108,7 +108,7 @@ function ListActiveCharges($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	$Skip = (isset($_POST['Skip'])) ? $_POST['Skip'] : 0;
 	$Limit = (isset($_POST['Limit']) && $_POST['Limit'] <= 100) ? $_POST['Limit'] : 20;
 
-	$query = 'SELECT `charges`.`ID`, `books`.`Title`, `users`.`Name`, `charges`.`BorrowDate`, `charges`.`Active` FROM `charges` LEFT JOIN `users` ON `charges`.`UserIdentifier` = `users`.`Identifier` LEFT JOIN `books` ON `charges`.`BookIdentifier` = `books`.`Identifier` WHERE `charges`.`Active` = true ORDER BY `charges`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+	$query = 'SELECT `charges`.`ID`, `charges`.`BookIdentifier`, `users`.`Name`, `charges`.`BorrowDate`, `charges`.`Active` FROM `charges` LEFT JOIN `users` ON `charges`.`UserIdentifier` = `users`.`Identifier` WHERE `charges`.`Active` = true ORDER BY `charges`.`ID` LIMIT '.$Skip.', '.$Limit.';';
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in BookV2::'.__FUNCTION__, 'errorCode' => 3101);
@@ -129,7 +129,7 @@ function ListCharges($PermissionLevels, $LogInLevel, $DatabaseConnection)
 	$Skip = (isset($_POST['Skip'])) ? $_POST['Skip'] : 0;
 	$Limit = (isset($_POST['Limit']) && $_POST['Limit'] <= 100) ? $_POST['Limit'] : 20;
 
-	$query = 'SELECT `charges`.`ID`, `books`.`Title`, `users`.`Name`, `charges`.`BorrowDate`, `charges`.`ReturnDate`, `charges`.`Active` FROM `charges` LEFT JOIN `users` ON `charges`.`UserIdentifier` = `users`.`Identifier` LEFT JOIN `books` ON `charges`.`BookIdentifier` = `books`.`Identifier` ORDER BY `charges`.`ID` LIMIT '.$Skip.', '.$Limit.';';
+	$query = 'SELECT `charges`.`ID`, `charges`.`BookIdentifier`, `users`.`Name`, `charges`.`BorrowDate`, `charges`.`ReturnDate`, `charges`.`Active` FROM `charges` LEFT JOIN `users` ON `charges`.`UserIdentifier` = `users`.`Identifier` ORDER BY `charges`.`ID` LIMIT '.$Skip.', '.$Limit.';';
 	$statement = $DatabaseConnection->prepare($query);
 	if (!$statement)
 		return array('response' => false, 'error' => 'Could not prepare statement in BookV2::'.__FUNCTION__, 'errorCode' => 3101);

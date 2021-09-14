@@ -638,6 +638,24 @@ $(function()
 
 
 	
+	{
+		let element = document.getElementById('NewUserLevel');
+		for (let i = 0; i < element.length; i++)
+		{
+			if (parseInt(element.options[i].value) <= level)
+				element.remove(i--);
+		}
+	}
+
+	{
+		let element = document.getElementById('EditUserLevel');
+		for (let i = 0; i < element.length; i++)
+		{
+			if (parseInt(element.options[i].value) <= level)
+				element.remove(i--);
+		}
+	}
+
 	BorrowBookUserIdentifierLock = $('#BorrowBookUserIdentifierLock');
 	BorrowBookUserName = $('#BorrowBookUserName');
 

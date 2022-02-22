@@ -3,6 +3,8 @@
 define('SQL_FILE', 'sql_connection.php');
 define('CONF_FILE', 'conf.php');
 
+error_reporting(0);
+
 function CreateSQLConnectionFile()
 {
 	if (!isset($_POST['ServerURL']) || !isset($_POST['ServerUsername']) || !isset($_POST['ServerPassword']) || !isset($_POST['ServerName']))

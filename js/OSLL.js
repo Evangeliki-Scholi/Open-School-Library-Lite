@@ -559,7 +559,7 @@ async function NewUserCreateUser()
 
 	let hashedPassword = sha256($('#NewUserPassword').val());
 
-	$.post(UserAPIV2, { 'type' : 'AddUser', 'Identifier' : $('#NewUserIdentifier').val(), 'Name' : $('#NewUserName').val(), 'Username' : $('#NewUserUsername').val(), 'Email' : $('#NewUserEmail').val(), 'Password' : $('#NewUserPassword').val(), 'Algo' : 'sha256', 'Level' : parseInt($('#NewUserLevel').val()), 'Grade' : $('#NewUserGrade').val() }, function(data)
+	$.post(UserAPIV2, { 'type' : 'AddUser', 'Identifier' : $('#NewUserIdentifier').val(), 'Name' : $('#NewUserName').val(), 'Username' : $('#NewUserUsername').val(), 'Email' : $('#NewUserEmail').val(), 'Password' : hashedPassword, 'Algo' : 'sha256', 'Level' : parseInt($('#NewUserLevel').val()), 'Grade' : $('#NewUserGrade').val() }, function(data)
 	{
 		if (!data['response'])
 			AddNotification(CreateNotification('Error', '', 'exclamation', data['error'], 'Error', true, false));

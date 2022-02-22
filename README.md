@@ -3,7 +3,7 @@ The Open School Library Lite is the name of the free software written to accommo
 
 
 # Installing Open School Library Lite
-You will need two things in order to install this service. Firstly you will need a server to host your service. The server does not have to be a very powerful one, a very basic will also work. Secondly you will need to install MySQL or MariaDB, Apache(2) and PHP. There are countless guides on how to install these three programs for your OS (Operating System). After that, navigate to your default server folder (The location will be mentioned by the tutorial to install Apache(2)) and place the source folders inside. After that navigate with the help of your browser of choice to “localhost”. Finally, fill out some inputs to configure the service (The whole configuring process takes less than one minute).
+You will need two things in order to install this service. Firstly you will need a server to host your service. The server does not have to be a very powerful one, a very basic will also work. Secondly you will need to install MySQL or MariaDB, Apache(2) and PHP. There are countless guides on how to install these three programs for your OS (Operating System). After that, navigate to your default server folder (The location will be mentioned by the tutorial to install Apache(2)) and place the source folders inside. After that navigate with the help of your browser of choice to “localhost”. Finally, fill out some inputs to configure the service (The whole configuring process takes less than one minute). Once you are done you can log in with root as your username and root as your password. Don't forget to change your password.
 
 
 # I have already installed Open School Library Lite, now what?

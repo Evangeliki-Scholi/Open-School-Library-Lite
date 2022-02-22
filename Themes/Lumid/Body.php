@@ -210,7 +210,7 @@ function MainPageLoad($Title = 'Open School Library Lite', $LoggedIn = false, $L
 					<div class="container-fluid">
 						<div class="row mb-2">
 							<div class="col-sm-6">
-								<h2>'.$Title.' Admin Panel</h2>
+								<h2>'.$Title.(($LoggedIn) ? ' Admin Panel' : '').'</h2>
 							</div>
 							<div class="col-sm-6">
 								<ol class="breadcrumb float-sm-right">
